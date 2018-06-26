@@ -9,7 +9,7 @@ import com.edgardrake.gw2.achievement.models.AchievementGroup
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
 class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
-                              val onItemClicked: ((Int, AchievementGroup) -> Unit)):
+                              val onItemClicked: (Int, AchievementGroup) -> Unit):
     RecyclerView.Adapter<AchievementGroupAdapter.AchievementGroupHolder>() {
 
     override fun getItemCount(): Int {

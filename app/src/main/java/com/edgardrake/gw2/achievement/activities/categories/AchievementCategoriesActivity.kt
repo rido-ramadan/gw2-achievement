@@ -11,13 +11,14 @@ import com.edgardrake.gw2.achievement.models.AchievementGroup
 import com.edgardrake.gw2.achievement.utilities.Logger
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 
 private const val ACHIEVEMENT_GROUP = "data"
 
 class AchievementCategoriesActivity : BaseActivity() {
 
     private lateinit var group: AchievementGroup
-    private lateinit var categories: List<AchievementCategories>
+    private var categories = ArrayList<AchievementCategories>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +45,11 @@ class AchievementCategoriesActivity : BaseActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {result ->
+                    if (page == 0) categories.clear()
+                    categories.addAll(result)
+
                     val logger = Logger(getActivity())
-                    for (category in result) {
+                    for (category in categories) {
                         logger.addEntry(category.id.toString(), category.name)
                     }
                     logger.show()
@@ -53,5 +57,4 @@ class AchievementCategoriesActivity : BaseActivity() {
                 {error -> }
             )
     }
-
 }

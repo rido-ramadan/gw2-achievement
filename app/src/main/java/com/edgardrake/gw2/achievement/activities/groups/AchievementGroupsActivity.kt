@@ -17,11 +17,13 @@ import retrofit2.HttpException
 
 class AchievementGroupsActivity : BaseActivity() {
 
+    private val groups = ArrayList<AchievementGroup>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_achievement_category)
 
-        actionButton.setOnClickListener {}
+        refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
 
         GET_AllAchievementGroups()
     }
@@ -35,6 +37,7 @@ class AchievementGroupsActivity : BaseActivity() {
             .subscribe(
                 { result -> setAchievementGroup(result) },
                 { error ->
+                    refreshContainer.isRefreshing = false
                     loading.visibility = View.GONE
                     if (error is HttpException) {
                         Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
@@ -47,9 +50,18 @@ class AchievementGroupsActivity : BaseActivity() {
 
     fun setAchievementGroup(dataset: List<AchievementGroup>) {
         loading.visibility = View.GONE
+        refreshContainer.isRefreshing = false
+
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementGroupAdapter(dataset,
-            {pos, data -> AchievementCategoriesActivity.startThisActivity(this, data)})
+        if (gridDataset.adapter == null) {
+            groups.addAll(dataset)
+            gridDataset.adapter = AchievementGroupAdapter(dataset,
+                {pos, data -> AchievementCategoriesActivity.startThisActivity(this, data)})
+        } else {
+            groups.clear()
+            groups.addAll(dataset)
+            gridDataset.adapter?.notifyDataSetChanged()
+        }
     }
 
     companion object {
