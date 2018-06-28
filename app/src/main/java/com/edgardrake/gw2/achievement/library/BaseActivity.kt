@@ -59,13 +59,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun <T> httpCall(request: Observable<T>,
                      callback: ((T) -> Unit),
-//                     onError: ((Throwable) -> Unit) = {
-//                         error: Throwable ->
-//                         if (error is HttpException) {
-//                             Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-//                         } else {
-//                             Log.e("Exception", "${error.message}")}
-//                     },
                      onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
                      onGenericError: ((message: String) -> Unit)? = null) {
 
