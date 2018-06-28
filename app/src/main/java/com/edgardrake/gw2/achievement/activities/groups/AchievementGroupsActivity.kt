@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesActivity
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesFragment
@@ -53,22 +52,25 @@ class AchievementGroupsActivity : BaseActivity() {
             gridDataset.adapter?.notifyDataSetChanged()
         }
 
-        httpCallback.add(GuildWars2API.getService().GET_AchievementGroups()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result -> setAchievementGroup(result) },
-                { error ->
-                    refreshContainer.isRefreshing = false
-                    loading.visibility = View.GONE
-                    if (error is HttpException) {
-                        Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-                    } else{
-                        Log.e("Exception", "${error.message}")
-                    }
-                }
-            )
-        )
+        val onSuccess = { result: List<AchievementGroup> -> setAchievementGroup(result) }
+        httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
+
+//        httpCallbacks.add(GuildWars2API.getService().GET_AchievementGroups()
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(
+//                { result -> setAchievementGroup(result) },
+//                { error ->
+//                    refreshContainer.isRefreshing = false
+//                    loading.visibility = View.GONE
+//                    if (error is HttpException) {
+//                        Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
+//                    } else{
+//                        Log.e("Exception", "${error.message}")
+//                    }
+//                }
+//            )
+//        )
     }
 
     private fun setAchievementGroup(dataset: List<AchievementGroup>) {
@@ -78,15 +80,16 @@ class AchievementGroupsActivity : BaseActivity() {
         gridDataset.setHasFixedSize(true)
         if (gridDataset.adapter == null) {
             groups.addAll(dataset)
-            gridDataset.adapter = AchievementGroupAdapter(dataset,
+            gridDataset.adapter = AchievementGroupAdapter(groups,
                 {pos, data -> actionOpenCategory(data)})
         } else {
+            groups.addAll(dataset)
             gridDataset.adapter?.notifyDataSetChanged()
         }
     }
 
     private fun actionOpenCategory(group: AchievementGroup) {
-        if (findViewById<ViewGroup>(R.id.achievementGroupDetail) != null) {
+        if (achievementGroupDetail != null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.achievementGroupDetail, AchievementCategoriesFragment.newInstance(group))
                 .commitNow()
