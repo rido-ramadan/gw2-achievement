@@ -14,8 +14,8 @@ class Logger(val context: Context) {
 
     private val entries = ArrayList<Pair<String, String>>()
 
-    fun addEntry(key: String, value: String) : Logger {
-        entries.add(Pair(key, value))
+    fun addEntry(key: String?, value: String?) : Logger {
+        entries.add(Pair(key ?: "", value ?: ""))
         return this
     }
 

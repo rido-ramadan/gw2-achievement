@@ -2,17 +2,20 @@ package com.edgardrake.gw2.achievement.activities.groups
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesActivity
+import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_achievement_category.*
+import kotlinx.android.synthetic.main.activity_achievement_group.*
 import retrofit2.HttpException
 
 class AchievementGroupsActivity : BaseActivity() {
@@ -21,17 +24,36 @@ class AchievementGroupsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_achievement_category)
-
-        refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
-
-        GET_AllAchievementGroups()
+        initialize()
     }
 
-    fun GET_AllAchievementGroups() {
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        when (newConfig?.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE or Configuration.ORIENTATION_PORTRAIT ->
+                initialize()
+        }
+    }
+
+    private fun initialize() {
+        setContentView(R.layout.activity_achievement_group)
+        refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
+        if (groups.isEmpty()) {
+            GET_AllAchievementGroups()
+        } else {
+            setAchievementGroup(groups)
+        }
+    }
+
+    private fun GET_AllAchievementGroups() {
         loading.visibility = View.VISIBLE
 
-        httpCallback = GuildWars2API.getService().GET_AchievementGroups()
+        if (!groups.isEmpty()) {
+            groups.clear()
+            gridDataset.adapter?.notifyDataSetChanged()
+        }
+
+        httpCallback.add(GuildWars2API.getService().GET_AchievementGroups()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -46,9 +68,10 @@ class AchievementGroupsActivity : BaseActivity() {
                     }
                 }
             )
+        )
     }
 
-    fun setAchievementGroup(dataset: List<AchievementGroup>) {
+    private fun setAchievementGroup(dataset: List<AchievementGroup>) {
         loading.visibility = View.GONE
         refreshContainer.isRefreshing = false
 
@@ -56,11 +79,19 @@ class AchievementGroupsActivity : BaseActivity() {
         if (gridDataset.adapter == null) {
             groups.addAll(dataset)
             gridDataset.adapter = AchievementGroupAdapter(dataset,
-                {pos, data -> AchievementCategoriesActivity.startThisActivity(this, data)})
+                {pos, data -> actionOpenCategory(data)})
         } else {
-            groups.clear()
-            groups.addAll(dataset)
             gridDataset.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private fun actionOpenCategory(group: AchievementGroup) {
+        if (findViewById<ViewGroup>(R.id.achievementGroupDetail) != null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.achievementGroupDetail, AchievementCategoriesFragment.newInstance(group))
+                .commitNow()
+        } else {
+            AchievementCategoriesActivity.startThisActivity(this, group)
         }
     }
 

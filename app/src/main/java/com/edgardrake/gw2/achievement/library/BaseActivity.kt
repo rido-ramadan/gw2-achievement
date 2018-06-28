@@ -4,12 +4,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import butterknife.ButterKnife
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.toolbar_fixed.*
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected var httpCallback : Disposable? = null
+    protected var httpCallback = CompositeDisposable()
 
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -39,7 +39,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        httpCallback?.dispose()
+        httpCallback.dispose()
     }
 
     protected fun getActivity() : BaseActivity {
