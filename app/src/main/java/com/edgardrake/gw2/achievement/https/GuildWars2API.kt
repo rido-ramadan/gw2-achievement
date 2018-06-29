@@ -1,6 +1,6 @@
 package com.edgardrake.gw2.achievement.https
 
-import com.edgardrake.gw2.achievement.models.AchievementCategories
+import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -9,7 +9,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface GuildWars2API {
@@ -19,7 +18,7 @@ interface GuildWars2API {
 
     @GET("achievements/categories")
     fun GET_AchievementCategories(@Query("ids") ids: String,
-                                  @Query("page") page: Int): Observable<List<AchievementCategories>>
+                                  @Query("page") page: Int): Observable<List<AchievementCategory>>
 
     companion object {
         private val GuildWars2Service by lazy {

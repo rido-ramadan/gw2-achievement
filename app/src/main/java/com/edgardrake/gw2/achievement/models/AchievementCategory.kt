@@ -5,7 +5,7 @@ import android.text.TextUtils
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AchievementCategories(
+data class AchievementCategory(
     val id: Int,
     val name: String,
     val description: String?,
