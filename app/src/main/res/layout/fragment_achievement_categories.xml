@@ -8,38 +8,33 @@
     android:orientation="vertical"
     tools:context=".activities.categories.AchievementCategoriesFragment">
 
-    <android.support.design.card.MaterialCardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        app:contentPadding="8dp"
-        app:cardElevation="4dp">
+        android:background="@android:color/white"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/achievementTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white">
+            tools:text="Achievement Title"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"/>
 
-            <TextView
-                android:id="@+id/achievementTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="Achievement Title"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-medium"/>
+        <TextView
+            android:id="@+id/achievementDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/achievementTitle"
+            tools:text="Achievement description here"
+            android:textSize="12sp"
+            android:textColor="@color/secondary_text_color"/>
 
-            <TextView
-                android:id="@+id/achievementDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/achievementTitle"
-                tools:text="Achievement description here"/>
-
-        </RelativeLayout>
-
-    </android.support.design.card.MaterialCardView>
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/gridDataset"

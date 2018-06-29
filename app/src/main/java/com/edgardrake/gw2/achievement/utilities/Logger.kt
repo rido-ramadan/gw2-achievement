@@ -31,16 +31,6 @@ class Logger(val context: Context) {
             .show()
     }
 
-    companion object {
-        val logger by lazy {
-            Logger(BaseApplication.getAppContext())
-        }
-
-        fun log() : Logger {
-            return logger
-        }
-    }
-
     class LoggerHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.logger_entry, parent, false)) {
 
