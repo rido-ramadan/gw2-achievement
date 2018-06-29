@@ -44,15 +44,4 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/actionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        app:srcCompat="@android:drawable/ic_menu_add"
-        app:fabCustomSize="72dp"
-        android:tint="@android:color/white"/>
-
 </android.support.design.widget.CoordinatorLayout>

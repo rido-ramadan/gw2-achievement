@@ -2,7 +2,6 @@ package com.edgardrake.gw2.achievement.activities.groups
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import com.edgardrake.gw2.achievement.R
@@ -18,6 +17,8 @@ import okhttp3.Headers
 class AchievementGroupsActivity : BaseActivity() {
 
     private val groups = ArrayList<AchievementGroup>()
+    var maxPage: Int? = null
+        private set(value) { if (value != null) field = value }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +41,7 @@ class AchievementGroupsActivity : BaseActivity() {
 
         val onSuccess = { result: List<AchievementGroup>, headers: Headers ->
             setAchievementGroup(result)
-            Logger(this)
-                .addEntry("page-size", headers["X-Page-Size"])
-                .addEntry("max-page", headers["X-Page-Total"])
-                .show()
+            maxPage = headers["X-Page-Total"]!!.toInt()
         }
         httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
     }
