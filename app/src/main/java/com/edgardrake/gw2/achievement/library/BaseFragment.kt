@@ -6,8 +6,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import okhttp3.Headers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
+import retrofit2.Response
 
 abstract class BaseFragment : Fragment() {
 
@@ -23,11 +25,10 @@ abstract class BaseFragment : Fragment() {
     }
 
     @JvmOverloads
-    fun <T> httpCall(request: Observable<T>,
-                     callback: ((T) -> Unit),
+    fun <T> httpCall(request: Observable<Response<T>>,
+                     onHttpSuccess: ((T, Headers) -> Unit),
                      onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
                      onGenericError: ((t: Throwable) -> Unit)? = {exception -> throw exception}) {
-        // On Error callback definition
         val onError: (error: Throwable) -> Unit = { error: Throwable ->
             if (error is HttpException) {
                 Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
@@ -35,6 +36,12 @@ abstract class BaseFragment : Fragment() {
             } else {
                 Log.e("Exception", "${error.message}")
                 onGenericError?.invoke(error)
+            }
+        }
+
+        val callback: (Response<T>) -> Unit = { result ->
+            result.body()?.let {
+                onHttpSuccess(it, result.headers())
             }
         }
 

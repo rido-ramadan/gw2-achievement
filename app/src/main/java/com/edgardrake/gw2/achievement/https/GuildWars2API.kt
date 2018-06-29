@@ -5,6 +5,7 @@ import com.edgardrake.gw2.achievement.models.AchievementGroup
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,11 +15,11 @@ import retrofit2.http.Query
 interface GuildWars2API {
 
     @GET("achievements/groups?page=0")
-    fun GET_AchievementGroups(): Observable<List<AchievementGroup>>
+    fun GET_AchievementGroups(): Observable<Response<List<AchievementGroup>>>
 
     @GET("achievements/categories")
     fun GET_AchievementCategories(@Query("ids") ids: String,
-                                  @Query("page") page: Int): Observable<List<AchievementCategory>>
+                                  @Query("page") page: Int): Observable<Response<List<AchievementCategory>>>
 
     companion object {
         private val GuildWars2Service by lazy {

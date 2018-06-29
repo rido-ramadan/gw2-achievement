@@ -53,7 +53,7 @@ class AchievementCategoriesFragment : BaseFragment() {
     private fun GET_AchievementCategories(page: Int = 0) {
         httpCall(GuildWars2API.getService()
             .GET_AchievementCategories(group.flattenCategories(), page),
-            {result -> setAchievementCategories(result)})
+            {result, headers -> setAchievementCategories(result)})
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {
