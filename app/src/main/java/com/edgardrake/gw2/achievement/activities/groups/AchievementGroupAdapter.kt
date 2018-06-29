@@ -3,10 +3,9 @@ package com.edgardrake.gw2.achievement.activities.groups
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import kotlinx.android.synthetic.main.grid_achievement.view.*
+import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 
 class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
                               val onItemClicked: (Int, AchievementGroup) -> Unit):
@@ -23,23 +22,20 @@ class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
     override fun onBindViewHolder(holder: AchievementGroupHolder, position: Int) {
         val achievementGroup = dataset[holder.adapterPosition]
         holder.title = achievementGroup.name
-        holder.itemView.setOnClickListener {
-            onItemClicked(holder.adapterPosition, achievementGroup)
-        }
+        holder.description = achievementGroup.description
+        holder.itemView.setOnClickListener {onItemClicked(holder.adapterPosition, achievementGroup)}
     }
 
     class AchievementGroupHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.grid_achievement, parent, false)) {
+        LayoutInflater.from(parent.context).inflate(R.layout.grid_achievement_group, parent, false)) {
 
         var title: String
-            get() = itemView.mAchievementTitle.text.toString()
-            set(value) { itemView.mAchievementTitle.text = value }
+            get() = itemView.achievementGroupName.text.toString()
+            set(value) { itemView.achievementGroupName.text = value }
 
-        fun setIcon(url: String) {
-            Glide.with(itemView)
-                .load(url)
-                .into(itemView.mAchievementIcon)
-        }
+        var description: String
+            get() = itemView.achievementGroupDesc.text.toString()
+            set(value) { itemView.achievementGroupDesc.text = value }
     }
 }
 

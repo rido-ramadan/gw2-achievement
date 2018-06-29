@@ -3,64 +3,71 @@ package com.edgardrake.gw2.achievement.activities.groups
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesActivity
+import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_achievement_category.*
-import retrofit2.HttpException
+import com.edgardrake.gw2.achievement.utilities.Logger
+import kotlinx.android.synthetic.main.activity_achievement_group.*
+import okhttp3.Headers
 
 class AchievementGroupsActivity : BaseActivity() {
 
     private val groups = ArrayList<AchievementGroup>()
+    var maxPage: Int? = null
+        private set(value) { if (value != null) field = value }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_achievement_category)
-
+        setContentView(R.layout.activity_achievement_group)
         refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
-
-        GET_AllAchievementGroups()
+        if (groups.isEmpty()) {
+            GET_AllAchievementGroups()
+        } else {
+            setAchievementGroup(groups)
+        }
     }
 
-    fun GET_AllAchievementGroups() {
+    private fun GET_AllAchievementGroups() {
         loading.visibility = View.VISIBLE
 
-        httpCallback = GuildWars2API.getService().GET_AchievementGroups()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result -> setAchievementGroup(result) },
-                { error ->
-                    refreshContainer.isRefreshing = false
-                    loading.visibility = View.GONE
-                    if (error is HttpException) {
-                        Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-                    } else{
-                        Log.e("Exception", "${error.message}")
-                    }
-                }
-            )
+        if (!groups.isEmpty()) {
+            groups.clear()
+            gridDataset.adapter?.notifyDataSetChanged()
+        }
+
+        val onSuccess = { result: List<AchievementGroup>, headers: Headers ->
+            setAchievementGroup(result)
+            maxPage = headers["X-Page-Total"]!!.toInt()
+        }
+        httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
     }
 
-    fun setAchievementGroup(dataset: List<AchievementGroup>) {
+    private fun setAchievementGroup(dataset: List<AchievementGroup>) {
         loading.visibility = View.GONE
         refreshContainer.isRefreshing = false
 
         gridDataset.setHasFixedSize(true)
         if (gridDataset.adapter == null) {
             groups.addAll(dataset)
-            gridDataset.adapter = AchievementGroupAdapter(dataset,
-                {pos, data -> AchievementCategoriesActivity.startThisActivity(this, data)})
+            gridDataset.adapter = AchievementGroupAdapter(groups,
+                {pos, data -> actionOpenCategory(data)})
         } else {
-            groups.clear()
             groups.addAll(dataset)
             gridDataset.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private fun actionOpenCategory(group: AchievementGroup) {
+        if (achievementGroupDetail != null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.achievementGroupDetail, AchievementCategoriesFragment.newInstance(group))
+                .commitNow()
+        } else {
+            AchievementCategoriesActivity.startThisActivity(this, group)
         }
     }
 

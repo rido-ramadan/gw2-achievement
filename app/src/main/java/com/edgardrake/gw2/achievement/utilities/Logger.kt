@@ -14,8 +14,8 @@ class Logger(val context: Context) {
 
     private val entries = ArrayList<Pair<String, String>>()
 
-    fun addEntry(key: String, value: String) : Logger {
-        entries.add(Pair(key, value))
+    fun addEntry(key: String?, value: String?) : Logger {
+        entries.add(Pair(key ?: "", value ?: ""))
         return this
     }
 
@@ -29,16 +29,6 @@ class Logger(val context: Context) {
             .setPositiveButton(android.R.string.ok, { dialog, id -> dialog.dismiss() })
             .create()
             .show()
-    }
-
-    companion object {
-        val logger by lazy {
-            Logger(BaseApplication.getAppContext())
-        }
-
-        fun log() : Logger {
-            return logger
-        }
     }
 
     class LoggerHolder(parent: ViewGroup) : RecyclerView.ViewHolder(

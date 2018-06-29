@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:layout_margin="2dp"
@@ -26,7 +26,8 @@
             android:id="@+id/mAchievementTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/mAchievementIcon"
+            android:layout_toEndOf="@id/mAchievementIcon"
+            android:layout_centerVertical="true"
             tools:text="Achievement Title"
             android:fontFamily="sans-serif-medium"/>
 

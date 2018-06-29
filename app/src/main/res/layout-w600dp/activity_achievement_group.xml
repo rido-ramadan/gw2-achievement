@@ -39,37 +39,29 @@
                         android:id="@+id/gridDataset"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="4dp"
+                        android:padding="1dp"
                         android:clipToPadding="false"
-                        app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                        app:spanCount="2"
-                        tools:listitem="@layout/grid_achievement"/>
+                        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                        tools:listitem="@layout/grid_achievement_group"/>
 
                 </android.support.v4.widget.SwipeRefreshLayout>
 
             </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/detail"
+                android:id="@+id/achievementGroupDetail"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"/>
 
-            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/achievementCategoryDetail"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/actionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        app:srcCompat="@android:drawable/ic_menu_add"
-        app:fabCustomSize="72dp"
-        android:tint="@android:color/white"/>
 
 </android.support.design.widget.CoordinatorLayout>
