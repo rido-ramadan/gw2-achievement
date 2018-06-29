@@ -2,22 +2,23 @@ package com.edgardrake.gw2.achievement.activities.categories
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupAdapter
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import com.edgardrake.gw2.achievement.utilities.Logger
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
-import kotlinx.android.synthetic.main.grid_achievement.*
-import retrofit2.HttpException
+import okhttp3.Headers
 
 /**
  * A placeholder fragment containing a simple view.
@@ -28,6 +29,7 @@ class AchievementCategoriesFragment : BaseFragment() {
 
     private lateinit var group: AchievementGroup
     private var categories = ArrayList<AchievementCategory>()
+    private var isCalling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,32 +64,63 @@ class AchievementCategoriesFragment : BaseFragment() {
                 }
             }
         }
+        gridDataset.addOnScrollListener(onScrollListener)
 
         // Set up SwipeRefreshLayout
         refreshContainer.setOnRefreshListener {
+            refreshContainer.isRefreshing = false
             categories.clear()
-            gridDataset.adapter?.notifyDataSetChanged()
-
+            gridDataset.adapter?.let {
+                it as AchievementCategoriesAdapter
+                it.resetLoading()
+                it.notifyDataSetChanged()
+            }
             GET_AchievementCategories()
-        }
-
-        if (categories.isEmpty()) {
-            GET_AchievementCategories(0)
         }
     }
 
-    private fun GET_AchievementCategories(page: Int = 0) {
+    private fun GET_AchievementCategories() {
+        val callback: (List<AchievementCategory>, Headers) -> Unit =
+            {result: List<AchievementCategory>, headers: Headers ->
+                setAchievementCategories(result)
+                isCalling = false
+        }
+        isCalling = true
         httpCall(GuildWars2API.getService()
-            .GET_AchievementCategories(group.flattenCategories(), page),
-            {result, headers -> setAchievementCategories(result)})
+            .GET_AchievementCategories(group.flattenCategories(), 0), callback)
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {
-        refreshContainer.isRefreshing = false
-
         val insertionPoint = categories.size
         categories.addAll(source)
-        gridDataset.adapter?.notifyItemRangeInserted(insertionPoint, source.size)
+        gridDataset.adapter?.let {
+            if (it is AchievementCategoriesAdapter) {
+                // it.notifyItemRangeInserted(insertionPoint, source.size)
+                it.notifyDataSetChanged()
+            }
+        }
+        gridDataset.addOnScrollListener(onScrollListener)
+    }
+
+    private val onScrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            recyclerView.adapter?.let {
+                val adapter = it as AchievementCategoriesAdapter
+                recyclerView.layoutManager?.let {
+                    it as LinearLayoutManager
+                    if (!adapter.isStopLoading && !isCalling &&
+                        it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
+                        recyclerView.removeOnScrollListener(this)
+
+                        if (categories.isEmpty()) {
+                            GET_AchievementCategories()
+                        } else{
+                            adapter.stopLoading()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     companion object {
