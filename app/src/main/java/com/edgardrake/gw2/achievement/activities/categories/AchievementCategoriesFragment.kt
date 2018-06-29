@@ -1,6 +1,7 @@
 package com.edgardrake.gw2.achievement.activities.categories
 
 import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import com.edgardrake.gw2.achievement.utilities.Logger
+import com.edgardrake.gw2.achievement.utilities.setLookupSize
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
@@ -45,6 +47,23 @@ class AchievementCategoriesFragment : BaseFragment() {
         achievementDesc.text = group.description
         achievementTitle.text = group.name
 
+        // Set up RecyclerView
+        gridDataset.setHasFixedSize(true)
+        gridDataset.adapter = AchievementCategoriesAdapter(categories,
+            { pos, data -> Logger(getHostActivity()).addEntry(data.name, data.description).show() })
+        gridDataset.layoutManager?.let {
+            if (it is GridLayoutManager) {
+                it.setLookupSize { position ->
+                    when (gridDataset.adapter?.getItemViewType(position)) {
+                        R.layout.grid_loading_view_holder ->
+                            requireContext().resources.getInteger(R.integer.grid_column)
+                        else -> 1
+                    }
+                }
+            }
+        }
+
+        // Set up SwipeRefreshLayout
         refreshContainer.setOnRefreshListener {
             categories.clear()
             gridDataset.adapter?.notifyDataSetChanged()
@@ -66,15 +85,9 @@ class AchievementCategoriesFragment : BaseFragment() {
     private fun setAchievementCategories(source: List<AchievementCategory>) {
         refreshContainer.isRefreshing = false
 
+        val insertionPoint = categories.size
         categories.addAll(source)
-
-        if (gridDataset.adapter == null) {
-            gridDataset.setHasFixedSize(true)
-            gridDataset.adapter = AchievementCategoriesAdapter(categories,
-                { pos, data -> Logger(getHostActivity()).addEntry(data.name, data.description).show() })
-        } else {
-            gridDataset.adapter?.notifyDataSetChanged()
-        }
+        gridDataset.adapter?.notifyItemRangeInserted(insertionPoint, source.size)
     }
 
     companion object {

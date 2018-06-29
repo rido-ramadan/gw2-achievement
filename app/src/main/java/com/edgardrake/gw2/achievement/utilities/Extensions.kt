@@ -1,8 +1,13 @@
 package com.edgardrake.gw2.achievement.utilities
 
+import android.support.annotation.LayoutRes
+import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,4 +34,13 @@ fun <T> Observable<T>.httpCall(callback: ((T) -> Unit),
     this.subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(callback, onError)
+}
+
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int): View =
+    LayoutInflater.from(this.context).inflate(layoutRes, this, false)
+
+fun GridLayoutManager.setLookupSize(columnSizeByPosition: (Int) -> Int) {
+    this.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int) = columnSizeByPosition(position)
+    }
 }
