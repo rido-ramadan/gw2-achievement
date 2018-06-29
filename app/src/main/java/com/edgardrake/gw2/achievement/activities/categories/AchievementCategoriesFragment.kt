@@ -45,6 +45,13 @@ class AchievementCategoriesFragment : BaseFragment() {
         achievementDesc.text = group.description
         achievementTitle.text = group.name
 
+        refreshContainer.setOnRefreshListener {
+            categories.clear()
+            gridDataset.adapter?.notifyDataSetChanged()
+
+            GET_AchievementCategories()
+        }
+
         if (categories.isEmpty()) {
             GET_AchievementCategories(0)
         }
@@ -57,10 +64,17 @@ class AchievementCategoriesFragment : BaseFragment() {
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {
+        refreshContainer.isRefreshing = false
+
         categories.addAll(source)
-        gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories,
-            {pos, data -> Logger(getHostActivity()).addEntry(data.name, data.description).show()})
+
+        if (gridDataset.adapter == null) {
+            gridDataset.setHasFixedSize(true)
+            gridDataset.adapter = AchievementCategoriesAdapter(categories,
+                { pos, data -> Logger(getHostActivity()).addEntry(data.name, data.description).show() })
+        } else {
+            gridDataset.adapter?.notifyDataSetChanged()
+        }
     }
 
     companion object {
