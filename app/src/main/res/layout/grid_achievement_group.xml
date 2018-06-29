@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?selectableItemBackground"
-        android:padding="8dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <TextView
             android:id="@+id/achievementGroupName"
@@ -27,7 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/achievementGroupName"
-            tools:text="Achievement Group Description"/>
+            tools:text="Achievement Group Description"
+            android:textSize="12sp"
+            android:textColor="@color/secondary_text_color"/>
 
     </RelativeLayout>
 

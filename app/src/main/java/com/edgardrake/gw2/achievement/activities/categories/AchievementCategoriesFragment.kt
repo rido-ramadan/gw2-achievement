@@ -51,21 +51,9 @@ class AchievementCategoriesFragment : BaseFragment() {
     }
 
     private fun GET_AchievementCategories(page: Int = 0) {
-        httpCallbacks.add(GuildWars2API.getService()
-            .GET_AchievementCategories(group.flattenCategories(), page)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {result -> setAchievementCategories(result)},
-                {error ->
-                    if (error is HttpException) {
-                        Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-                    } else{
-                        Log.e("Exception", "${error.message}")
-                    }
-                }
-            )
-        )
+        httpCall(GuildWars2API.getService()
+            .GET_AchievementCategories(group.flattenCategories(), page),
+            {result -> setAchievementCategories(result)})
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {

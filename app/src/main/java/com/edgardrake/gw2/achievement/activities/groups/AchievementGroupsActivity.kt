@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesActivity
@@ -12,10 +11,7 @@ import com.edgardrake.gw2.achievement.activities.categories.AchievementCategorie
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_achievement_group.*
-import retrofit2.HttpException
 
 class AchievementGroupsActivity : BaseActivity() {
 
@@ -54,23 +50,6 @@ class AchievementGroupsActivity : BaseActivity() {
 
         val onSuccess = { result: List<AchievementGroup> -> setAchievementGroup(result) }
         httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
-
-//        httpCallbacks.add(GuildWars2API.getService().GET_AchievementGroups()
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(
-//                { result -> setAchievementGroup(result) },
-//                { error ->
-//                    refreshContainer.isRefreshing = false
-//                    loading.visibility = View.GONE
-//                    if (error is HttpException) {
-//                        Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-//                    } else{
-//                        Log.e("Exception", "${error.message}")
-//                    }
-//                }
-//            )
-//        )
     }
 
     private fun setAchievementGroup(dataset: List<AchievementGroup>) {

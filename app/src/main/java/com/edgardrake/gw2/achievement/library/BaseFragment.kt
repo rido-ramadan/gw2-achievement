@@ -22,10 +22,11 @@ abstract class BaseFragment : Fragment() {
         return requireActivity() as BaseActivity
     }
 
+    @JvmOverloads
     fun <T> httpCall(request: Observable<T>,
                      callback: ((T) -> Unit),
                      onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
-                     onGenericError: ((message: String) -> Unit)? = null) {
+                     onGenericError: ((t: Throwable) -> Unit)? = {exception -> throw exception}) {
         // On Error callback definition
         val onError: (error: Throwable) -> Unit = { error: Throwable ->
             if (error is HttpException) {
@@ -33,7 +34,7 @@ abstract class BaseFragment : Fragment() {
                 onHttpError?.invoke(error.code(), error.response().message(), error.response().errorBody())
             } else {
                 Log.e("Exception", "${error.message}")
-                onGenericError?.invoke(error.localizedMessage)
+                onGenericError?.invoke(error)
             }
         }
 
