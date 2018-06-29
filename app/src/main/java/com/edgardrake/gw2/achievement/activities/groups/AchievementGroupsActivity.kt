@@ -11,7 +11,9 @@ import com.edgardrake.gw2.achievement.activities.categories.AchievementCategorie
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
+import com.edgardrake.gw2.achievement.utilities.Logger
 import kotlinx.android.synthetic.main.activity_achievement_group.*
+import okhttp3.Headers
 
 class AchievementGroupsActivity : BaseActivity() {
 
@@ -19,18 +21,6 @@ class AchievementGroupsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initialize()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-        when (newConfig?.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE or Configuration.ORIENTATION_PORTRAIT ->
-                initialize()
-        }
-    }
-
-    private fun initialize() {
         setContentView(R.layout.activity_achievement_group)
         refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
         if (groups.isEmpty()) {
@@ -48,7 +38,13 @@ class AchievementGroupsActivity : BaseActivity() {
             gridDataset.adapter?.notifyDataSetChanged()
         }
 
-        val onSuccess = { result: List<AchievementGroup> -> setAchievementGroup(result) }
+        val onSuccess = { result: List<AchievementGroup>, headers: Headers ->
+            setAchievementGroup(result)
+            Logger(this)
+                .addEntry("page-size", headers["X-Page-Size"])
+                .addEntry("max-page", headers["X-Page-Total"])
+                .show()
+        }
         httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
     }
 
