@@ -10,7 +10,6 @@ import com.edgardrake.gw2.achievement.activities.categories.AchievementCategorie
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.utilities.Logger
 import kotlinx.android.synthetic.main.activity_achievement_group.*
 import okhttp3.Headers
 
@@ -23,6 +22,7 @@ class AchievementGroupsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_achievement_group)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
         if (groups.isEmpty()) {
             GET_AllAchievementGroups()
@@ -54,7 +54,7 @@ class AchievementGroupsActivity : BaseActivity() {
         if (gridDataset.adapter == null) {
             groups.addAll(dataset)
             gridDataset.adapter = AchievementGroupAdapter(groups,
-                {pos, data -> actionOpenCategory(data)})
+                {_: Int, data: AchievementGroup -> actionOpenCategory(data)})
         } else {
             groups.addAll(dataset)
             gridDataset.adapter?.notifyDataSetChanged()

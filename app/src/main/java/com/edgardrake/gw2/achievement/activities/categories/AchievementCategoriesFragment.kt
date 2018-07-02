@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
 import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupAdapter
+import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupsActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
@@ -46,13 +48,23 @@ class AchievementCategoriesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        achievementIcon.visibility = View.GONE
         achievementDesc.text = group.description
         achievementTitle.text = group.name
 
         // Set up RecyclerView
+        val onItemClick = { _: Int, data: AchievementCategory ->
+            if (getHostActivity() is AchievementGroupsActivity) {
+                getHostActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.achievementCategoryDetail, AchievementsFragment.newInstance(data))
+                    .commitNow()
+            } else {
+                Logger(getHostActivity()).addEntry(data.name, data.description).show()
+            }
+        }
+
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories,
-            { pos, data -> Logger(getHostActivity()).addEntry(data.name, data.description).show() })
+        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick)
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
@@ -81,7 +93,7 @@ class AchievementCategoriesFragment : BaseFragment() {
 
     private fun GET_AchievementCategories() {
         val callback: (List<AchievementCategory>, Headers) -> Unit =
-            {result: List<AchievementCategory>, headers: Headers ->
+            {result: List<AchievementCategory>, _: Headers ->
                 setAchievementCategories(result)
                 isCalling = false
         }

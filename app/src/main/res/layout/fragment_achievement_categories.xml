@@ -18,10 +18,19 @@
         android:paddingRight="16dp"
         android:elevation="1dp">
 
+        <ImageView
+            android:id="@+id/achievementIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            tools:src="@drawable/ic_gw2_launcher"/>
+
         <TextView
             android:id="@+id/achievementTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/achievementIcon"
             tools:text="Achievement Title"
             android:textSize="16sp"
             android:fontFamily="sans-serif-medium"/>
@@ -30,6 +39,7 @@
             android:id="@+id/achievementDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/achievementIcon"
             android:layout_below="@id/achievementTitle"
             tools:text="Achievement description here"
             android:textSize="12sp"
