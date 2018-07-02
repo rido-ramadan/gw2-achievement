@@ -12,6 +12,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.toolbar_fixed.*
 import okhttp3.Headers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -57,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStack()
-            currentTitle = prevTitles.pop()
+            if (!prevTitles.empty()) currentTitle = prevTitles.pop()
         } else {
             super.onBackPressed()
         }

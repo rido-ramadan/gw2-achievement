@@ -64,7 +64,9 @@ class AchievementCategoriesFragment : BaseFragment() {
             }
         }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick)
+        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick).apply {
+            if (!categories.isEmpty()) stopLoading()
+        }
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
