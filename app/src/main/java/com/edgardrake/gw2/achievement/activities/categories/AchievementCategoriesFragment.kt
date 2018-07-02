@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.activities.achievements.AchievementsActivity
 import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
 import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupAdapter
 import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupsActivity
@@ -59,7 +60,7 @@ class AchievementCategoriesFragment : BaseFragment() {
                     .replace(R.id.achievementCategoryDetail, AchievementsFragment.newInstance(data))
                     .commitNow()
             } else {
-                Logger(getHostActivity()).addEntry(data.name, data.description).show()
+                AchievementsActivity.startThisActivity(getHostActivity(), data)
             }
         }
 
