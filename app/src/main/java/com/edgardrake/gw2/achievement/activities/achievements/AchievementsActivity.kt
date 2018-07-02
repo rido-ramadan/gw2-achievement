@@ -18,7 +18,7 @@ class AchievementsActivity : BaseActivity() {
         setContentView(R.layout.activity_achievement_categories)
 
         category = intent.getParcelableExtra(CATEGORY)
-        supportActionBar!!.title = category.name
+        activityTitle = category.name
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, AchievementsFragment.newInstance(category))

@@ -14,21 +14,28 @@
 
         <include layout="@layout/toolbar_fixed"/>
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/refreshContainer"
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/gridDataset"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/refreshContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="1dp"
-                android:clipToPadding="false"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                tools:listitem="@layout/grid_achievement_group"/>
+                android:layout_height="match_parent">
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/gridDataset"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="1dp"
+                    android:clipToPadding="false"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    tools:listitem="@layout/grid_achievement_group"/>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
