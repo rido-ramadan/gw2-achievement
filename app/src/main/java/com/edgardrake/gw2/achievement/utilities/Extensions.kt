@@ -1,7 +1,9 @@
 package com.edgardrake.gw2.achievement.utilities
 
+import android.app.Activity
 import android.content.Context
 import android.support.annotation.LayoutRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
@@ -56,10 +58,22 @@ fun Context.toast(resID: Int) {
     Toast.makeText(this, resID, Toast.LENGTH_SHORT).show()
 }
 
+fun Activity.snackbar(text: String) {
+    Snackbar.make(findViewById<ViewGroup>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+        .setAction(android.R.string.ok, null)
+        .show()
+}
+
 fun Fragment.toast(text: String) {
     Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
 }
 
 fun Fragment.toast(resID: Int) {
     Toast.makeText(requireContext(), resID, Toast.LENGTH_SHORT).show()
+}
+
+fun Fragment.snackbar(text: String) {
+    Snackbar.make(requireActivity().findViewById<ViewGroup>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+        .setAction(android.R.string.ok, null)
+        .show()
 }

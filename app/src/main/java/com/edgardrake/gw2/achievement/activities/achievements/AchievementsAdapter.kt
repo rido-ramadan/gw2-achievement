@@ -41,8 +41,8 @@ class AchievementsAdapter(val dataset: List<Achievement>,
     }
 
     fun stopLoading() {
-        isStopLoading = true
         notifyItemRemoved(itemCount)
+        isStopLoading = true
     }
 
     fun resetLoading() {

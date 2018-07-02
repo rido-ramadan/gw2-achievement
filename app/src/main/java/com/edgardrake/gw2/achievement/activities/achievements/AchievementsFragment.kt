@@ -14,10 +14,7 @@ import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
-import com.edgardrake.gw2.achievement.utilities.GlideApp
-import com.edgardrake.gw2.achievement.utilities.Logger
-import com.edgardrake.gw2.achievement.utilities.setLookupSize
-import com.edgardrake.gw2.achievement.utilities.toast
+import com.edgardrake.gw2.achievement.utilities.*
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
 import okhttp3.ResponseBody
@@ -81,6 +78,18 @@ class AchievementsFragment : BaseFragment() {
             }
         }
         gridDataset.addOnScrollListener(onScrollListener)
+
+        // Set up SwipeRefreshLayout
+        refreshContainer.setOnRefreshListener {
+            refreshContainer.isRefreshing = false
+            achievements.clear()
+            gridDataset.adapter?.let {
+                it as AchievementsAdapter
+                it.resetLoading()
+                it.notifyDataSetChanged()
+            }
+            GET_Achievements()
+        }
     }
 
     private fun GET_Achievements() {
@@ -89,8 +98,12 @@ class AchievementsFragment : BaseFragment() {
                 setAchievements(result)
                 isCalling = false
             }
-        val onHTTPError = {code: Int, message: String, _: ResponseBody? ->
+        val onHTTPError: ((Int, String, ResponseBody?) -> Unit)? = { code: Int, message: String, _: ResponseBody? ->
             toast(String.format("%d: %s", code, message))
+            gridDataset.adapter?.let {
+                it as AchievementsAdapter
+                it.stopLoading()
+            }
         }
         isCalling = true
         httpCall(GuildWars2API.getService()

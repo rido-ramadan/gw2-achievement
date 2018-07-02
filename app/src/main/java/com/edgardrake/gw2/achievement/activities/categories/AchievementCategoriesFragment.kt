@@ -109,6 +109,7 @@ class AchievementCategoriesFragment : BaseFragment() {
             if (it is AchievementCategoriesAdapter) {
                 // it.notifyItemRangeInserted(insertionPoint, source.size)
                 it.notifyDataSetChanged()
+                it.stopLoading()
             }
         }
         gridDataset.addOnScrollListener(onScrollListener)
@@ -123,12 +124,7 @@ class AchievementCategoriesFragment : BaseFragment() {
                     if (!adapter.isStopLoading && !isCalling &&
                         it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
                         recyclerView.removeOnScrollListener(this)
-
-                        if (categories.isEmpty()) {
-                            GET_AchievementCategories()
-                        } else{
-                            adapter.stopLoading()
-                        }
+                        GET_AchievementCategories()
                     }
                 }
             }

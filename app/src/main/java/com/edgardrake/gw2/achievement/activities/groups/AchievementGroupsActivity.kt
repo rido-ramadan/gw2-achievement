@@ -3,6 +3,8 @@ package com.edgardrake.gw2.achievement.activities.groups
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesActivity
@@ -16,6 +18,7 @@ import okhttp3.Headers
 class AchievementGroupsActivity : BaseActivity() {
 
     private val groups = ArrayList<AchievementGroup>()
+    private var isCalling = false
     var maxPage: Int? = null
         private set(value) { if (value != null) field = value }
 
@@ -23,22 +26,25 @@ class AchievementGroupsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_achievement_group)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        refreshContainer.setOnRefreshListener { GET_AllAchievementGroups() }
-        if (groups.isEmpty()) {
+
+        val onClick = {_: Int, data: AchievementGroup -> actionOpenCategory(data)}
+        gridDataset.setHasFixedSize(true)
+        gridDataset.adapter = AchievementGroupAdapter(groups, onClick)
+        gridDataset.addOnScrollListener(onScrollListener)
+
+        refreshContainer.setOnRefreshListener {
+            refreshContainer.isRefreshing = false
+            groups.clear()
+            gridDataset.adapter?.let {
+                it as AchievementGroupAdapter
+                it.resetLoading()
+                it.notifyDataSetChanged()
+            }
             GET_AllAchievementGroups()
-        } else {
-            setAchievementGroup(groups)
         }
     }
 
     private fun GET_AllAchievementGroups() {
-        loading.visibility = View.VISIBLE
-
-        if (!groups.isEmpty()) {
-            groups.clear()
-            gridDataset.adapter?.notifyDataSetChanged()
-        }
-
         val onSuccess = { result: List<AchievementGroup>, headers: Headers ->
             setAchievementGroup(result)
             maxPage = headers["X-Page-Total"]!!.toInt()
@@ -47,18 +53,15 @@ class AchievementGroupsActivity : BaseActivity() {
     }
 
     private fun setAchievementGroup(dataset: List<AchievementGroup>) {
-        loading.visibility = View.GONE
         refreshContainer.isRefreshing = false
 
-        gridDataset.setHasFixedSize(true)
-        if (gridDataset.adapter == null) {
-            groups.addAll(dataset)
-            gridDataset.adapter = AchievementGroupAdapter(groups,
-                {_: Int, data: AchievementGroup -> actionOpenCategory(data)})
-        } else {
-            groups.addAll(dataset)
-            gridDataset.adapter?.notifyDataSetChanged()
+        groups.addAll(dataset)
+        gridDataset.adapter?.let {
+            it as AchievementGroupAdapter
+            it.notifyDataSetChanged()
+            it.stopLoading()
         }
+        gridDataset.addOnScrollListener(onScrollListener)
     }
 
     private fun actionOpenCategory(group: AchievementGroup) {
@@ -68,6 +71,22 @@ class AchievementGroupsActivity : BaseActivity() {
                 .commitNow()
         } else {
             AchievementCategoriesActivity.startThisActivity(this, group)
+        }
+    }
+
+    private val onScrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            recyclerView.adapter?.let {
+                val adapter = it as AchievementGroupAdapter
+                recyclerView.layoutManager?.let {
+                    it as LinearLayoutManager
+                    if (!adapter.isStopLoading && !isCalling &&
+                        it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
+                        recyclerView.removeOnScrollListener(this)
+                        GET_AllAchievementGroups()
+                    }
+                }
+            }
         }
     }
 
