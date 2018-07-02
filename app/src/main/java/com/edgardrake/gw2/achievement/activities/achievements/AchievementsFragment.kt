@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +55,8 @@ class AchievementsFragment : BaseFragment() {
             .into(achievementIcon)
         achievementTitle.text = category.name
         achievementDesc.text = category.description
-        achievementDesc.visibility = if (category.description != null) View.VISIBLE else View.GONE
+        achievementDesc.visibility = if (!TextUtils.isEmpty(category.description))
+            View.VISIBLE else View.GONE
 
         // Set up RecyclerView
         val onItemClick = { _: Int, data: Achievement ->
@@ -65,7 +67,7 @@ class AchievementsFragment : BaseFragment() {
                 .show()
         }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementsAdapter(achievements, onItemClick)
+        gridDataset.adapter = AchievementsAdapter(achievements, category.icon, onItemClick)
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
