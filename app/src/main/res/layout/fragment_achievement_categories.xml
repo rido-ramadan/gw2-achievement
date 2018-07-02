@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".activities.categories.AchievementCategoriesFragment">
 
-    <RelativeLayout
+    <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -16,7 +16,8 @@
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:elevation="1dp">
+        android:elevation="1dp"
+        app:columnCount="2">
 
         <ImageView
             android:id="@+id/achievementIcon"
@@ -24,28 +25,34 @@
             android:layout_height="40dp"
             android:layout_marginRight="8dp"
             android:layout_marginEnd="8dp"
-            tools:src="@drawable/ic_gw2_launcher"/>
+            tools:src="@drawable/ic_gw2_launcher"
+            app:layout_column="0"
+            app:layout_rowSpan="2"/>
 
         <TextView
             android:id="@+id/achievementTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/achievementIcon"
             tools:text="Achievement Title"
             android:textSize="16sp"
-            android:fontFamily="sans-serif-medium"/>
+            android:fontFamily="sans-serif-medium"
+            app:layout_column="1"
+            app:layout_gravity="fill_horizontal|center_vertical"/>
 
         <TextView
             android:id="@+id/achievementDesc"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/achievementIcon"
             android:layout_below="@id/achievementTitle"
             tools:text="Achievement description here"
             android:textSize="12sp"
-            android:textColor="@color/secondary_text_color"/>
+            android:textColor="@color/secondary_text_color"
+            app:layout_column="1"
+            app:layout_gravity="fill_horizontal"/>
 
-    </RelativeLayout>
+    </android.support.v7.widget.GridLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/refreshContainer"

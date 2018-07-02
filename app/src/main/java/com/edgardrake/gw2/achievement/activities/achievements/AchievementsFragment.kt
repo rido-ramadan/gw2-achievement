@@ -3,16 +3,24 @@ package com.edgardrake.gw2.achievement.activities.achievements
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
-
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
+import com.edgardrake.gw2.achievement.utilities.GlideApp
+import com.edgardrake.gw2.achievement.utilities.Logger
+import com.edgardrake.gw2.achievement.utilities.setLookupSize
+import com.edgardrake.gw2.achievement.utilities.toast
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
+import okhttp3.Headers
+import okhttp3.ResponseBody
 
 private const val CATEGORY = "category"
 
@@ -25,7 +33,7 @@ private const val CATEGORY = "category"
 class AchievementsFragment : BaseFragment() {
 
     private lateinit var category: AchievementCategory
-    private var achievements: List<Achievement> = ArrayList()
+    private var achievements = ArrayList<Achievement>()
     private var isCalling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,11 +52,79 @@ class AchievementsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Glide.with(requireContext()).load(category.icon).into(achievementIcon)
-        achievementDesc.text = category.description
+        GlideApp.with(requireContext())
+            .load(category.icon)
+            .into(achievementIcon)
         achievementTitle.text = category.name
+        achievementDesc.text = category.description
+        achievementDesc.visibility = if (category.description != null) View.VISIBLE else View.GONE
 
+        // Set up RecyclerView
+        val onItemClick = { _: Int, data: Achievement ->
+            Logger(getHostActivity())
+                .addEntry("Name", data.name)
+                .addEntry("Description", data.description)
+                .addEntry("Requirement", data.requirement)
+                .show()
+        }
         gridDataset.setHasFixedSize(true)
+        gridDataset.adapter = AchievementsAdapter(achievements, onItemClick)
+        gridDataset.layoutManager?.let {
+            if (it is GridLayoutManager) {
+                it.setLookupSize { position ->
+                    when (gridDataset.adapter?.getItemViewType(position)) {
+                        R.layout.grid_loading_view_holder ->
+                            requireContext().resources.getInteger(R.integer.grid_column)
+                        else -> 1
+                    }
+                }
+            }
+        }
+        gridDataset.addOnScrollListener(onScrollListener)
+    }
+
+    private fun GET_Achievements() {
+        val callback: (List<Achievement>, Headers) -> Unit =
+            {result: List<Achievement>, _: Headers ->
+                setAchievements(result)
+                isCalling = false
+            }
+        val onHTTPError = {code: Int, message: String, _: ResponseBody? ->
+            toast(String.format("%d: %s", code, message))
+        }
+        isCalling = true
+        httpCall(GuildWars2API.getService()
+            .GET_Achievements(category.flattenAchievements()), callback, onHTTPError)
+    }
+
+    private fun setAchievements(source: List<Achievement>) {
+        val insertionPoint = achievements.size
+        achievements.addAll(source)
+        gridDataset.adapter?.let {
+            if (it is AchievementsAdapter) {
+                // it.notifyItemRangeInserted(insertionPoint, source.size)
+                it.notifyDataSetChanged()
+                it.stopLoading()
+            }
+            gridDataset.addOnScrollListener(onScrollListener)
+        }
+
+    }
+
+    private val onScrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            recyclerView.adapter?.let {
+                val adapter = it as AchievementsAdapter
+                recyclerView.layoutManager?.let {
+                    it as LinearLayoutManager
+                    if (!adapter.isStopLoading && !isCalling &&
+                        it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
+                        recyclerView.removeOnScrollListener(this)
+                        GET_Achievements()
+                    }
+                }
+            }
+        }
     }
 
     companion object {

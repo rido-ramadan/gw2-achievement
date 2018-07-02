@@ -1,5 +1,6 @@
 package com.edgardrake.gw2.achievement.https
 
+import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import io.reactivex.Observable
@@ -20,6 +21,8 @@ interface GuildWars2API {
     @GET("achievements/categories")
     fun GET_AchievementCategories(@Query("ids") ids: String,
                                   @Query("page") page: Int): Observable<Response<List<AchievementCategory>>>
+    @GET("achievements")
+    fun GET_Achievements(@Query("ids") ids: String): Observable<Response<List<Achievement>>>
 
     companion object {
         private val GuildWars2Service by lazy {

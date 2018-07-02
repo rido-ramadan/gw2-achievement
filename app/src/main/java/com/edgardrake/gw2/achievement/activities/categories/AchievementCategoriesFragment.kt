@@ -63,7 +63,6 @@ class AchievementCategoriesFragment : BaseFragment() {
                 AchievementsActivity.startThisActivity(getHostActivity(), data)
             }
         }
-
         gridDataset.setHasFixedSize(true)
         gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick)
         gridDataset.layoutManager?.let {

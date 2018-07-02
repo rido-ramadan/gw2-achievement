@@ -1,16 +1,16 @@
-package com.edgardrake.gw2.achievement.activities.categories
+package com.edgardrake.gw2.achievement.activities.achievements
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.models.AchievementCategory
+import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.utilities.GlideApp
 import com.edgardrake.gw2.achievement.widgets.LoadingViewHolder
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
-class AchievementCategoriesAdapter(val dataset: List<AchievementCategory>,
-                                   val onItemClicked: (Int, AchievementCategory) -> Unit):
+class AchievementsAdapter(val dataset: List<Achievement>,
+                          val onItemClicked: (Int, Achievement) -> Unit):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var isStopLoading = false
@@ -27,16 +27,16 @@ class AchievementCategoriesAdapter(val dataset: List<AchievementCategory>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         if (viewType == R.layout.grid_achievement)
-            AchievementCategoriesHolder(parent)
+            AchievementsHolder(parent)
         else
             LoadingViewHolder(parent)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is AchievementCategoriesHolder) {
-            val category = dataset[holder.adapterPosition]
-            holder.title = category.name
-            holder.setIcon(category.icon)
-            holder.itemView.setOnClickListener { onItemClicked(holder.adapterPosition, category) }
+        if (holder is AchievementsHolder) {
+            val achievement = dataset[holder.adapterPosition]
+            holder.title = achievement.name
+            // achievement.icon?.let { holder.setIcon(it) }
+            holder.itemView.setOnClickListener { onItemClicked(holder.adapterPosition, achievement) }
         }
     }
 
@@ -49,7 +49,7 @@ class AchievementCategoriesAdapter(val dataset: List<AchievementCategory>,
         isStopLoading = false
     }
 
-    class AchievementCategoriesHolder(parent: ViewGroup): RecyclerView.ViewHolder(
+    class AchievementsHolder(parent: ViewGroup): RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.grid_achievement, parent, false)) {
 
         var title: String
@@ -59,6 +59,7 @@ class AchievementCategoriesAdapter(val dataset: List<AchievementCategory>,
         fun setIcon(url: String) {
             GlideApp.with(itemView)
                 .load(url)
+                .error(R.drawable.ic_gw2_launcher)
                 .into(itemView.mAchievementIcon)
         }
     }
