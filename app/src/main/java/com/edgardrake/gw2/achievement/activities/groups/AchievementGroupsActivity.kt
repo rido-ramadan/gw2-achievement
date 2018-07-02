@@ -3,6 +3,7 @@ package com.edgardrake.gw2.achievement.activities.groups
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -17,7 +18,7 @@ import okhttp3.Headers
 
 class AchievementGroupsActivity : BaseActivity() {
 
-    private val groups = ArrayList<AchievementGroup>()
+    private var groups = ArrayList<AchievementGroup>()
     private var isCalling = false
     var maxPage: Int? = null
         private set(value) { if (value != null) field = value }
@@ -95,5 +96,7 @@ class AchievementGroupsActivity : BaseActivity() {
         fun startThisActivity(context: Context) {
             context.startActivity(Intent(context, AchievementGroupsActivity::class.java))
         }
+
+        const val ACHIEVEMENT_GROUPS = "groups"
     }
 }

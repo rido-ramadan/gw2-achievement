@@ -10,6 +10,7 @@ import com.edgardrake.gw2.achievement.widgets.LoadingViewHolder
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
 class AchievementsAdapter(val dataset: List<Achievement>,
+                          val defaultIcon: String,
                           val onItemClicked: (Int, Achievement) -> Unit):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -35,7 +36,7 @@ class AchievementsAdapter(val dataset: List<Achievement>,
         if (holder is AchievementsHolder) {
             val achievement = dataset[holder.adapterPosition]
             holder.title = achievement.name
-            // achievement.icon?.let { holder.setIcon(it) }
+            holder.setIcon(achievement.icon ?: defaultIcon)
             holder.itemView.setOnClickListener { onItemClicked(holder.adapterPosition, achievement) }
         }
     }
