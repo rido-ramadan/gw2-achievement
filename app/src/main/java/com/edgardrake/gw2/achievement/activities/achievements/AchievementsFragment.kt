@@ -1,70 +1,71 @@
-package com.edgardrake.gw2.achievement.activities.categories
+package com.edgardrake.gw2.achievement.activities.achievements
+
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.activities.achievements.AchievementsActivity
-import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
-import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupAdapter
-import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupsActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
+import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
-import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.utilities.Logger
-import com.edgardrake.gw2.achievement.utilities.setLookupSize
+import com.edgardrake.gw2.achievement.utilities.*
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
+import okhttp3.ResponseBody
+
+private const val CATEGORY = "category"
 
 /**
- * A placeholder fragment containing a simple view.
+ * A simple [Fragment] subclass.
+ * Use the [AchievementsFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ *
  */
-private const val ACHIEVEMENT_GROUP = "data"
+class AchievementsFragment : BaseFragment() {
 
-class AchievementCategoriesFragment : BaseFragment() {
-
-    private lateinit var group: AchievementGroup
-    private var categories = ArrayList<AchievementCategory>()
+    private lateinit var category: AchievementCategory
+    private var achievements = ArrayList<Achievement>()
     private var isCalling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            group = it.getParcelable(ACHIEVEMENT_GROUP)
+            category = it.getParcelable(CATEGORY)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_achievement_categories, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        achievementIcon.visibility = View.GONE
-        achievementDesc.text = group.description
-        achievementTitle.text = group.name
+        GlideApp.with(requireContext())
+            .load(category.icon)
+            .into(achievementIcon)
+        achievementTitle.text = category.name
+        achievementDesc.text = category.description
+        achievementDesc.visibility = if (category.description != null) View.VISIBLE else View.GONE
 
         // Set up RecyclerView
-        val onItemClick = { _: Int, data: AchievementCategory ->
-            if (getHostActivity() is AchievementGroupsActivity) {
-                getHostActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.achievementCategoryDetail, AchievementsFragment.newInstance(data))
-                    .commitNow()
-            } else {
-                AchievementsActivity.startThisActivity(getHostActivity(), data)
-            }
+        val onItemClick = { _: Int, data: Achievement ->
+            Logger(getHostActivity())
+                .addEntry("Name", data.name)
+                .addEntry("Description", data.description)
+                .addEntry("Requirement", data.requirement)
+                .show()
         }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick)
+        gridDataset.adapter = AchievementsAdapter(achievements, onItemClick)
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
@@ -81,50 +82,58 @@ class AchievementCategoriesFragment : BaseFragment() {
         // Set up SwipeRefreshLayout
         refreshContainer.setOnRefreshListener {
             refreshContainer.isRefreshing = false
-            categories.clear()
+            achievements.clear()
             gridDataset.adapter?.let {
-                it as AchievementCategoriesAdapter
+                it as AchievementsAdapter
                 it.resetLoading()
                 it.notifyDataSetChanged()
             }
-            GET_AchievementCategories()
+            GET_Achievements()
         }
     }
 
-    private fun GET_AchievementCategories() {
-        val callback: (List<AchievementCategory>, Headers) -> Unit =
-            {result: List<AchievementCategory>, _: Headers ->
-                setAchievementCategories(result)
+    private fun GET_Achievements() {
+        val callback: (List<Achievement>, Headers) -> Unit =
+            {result: List<Achievement>, _: Headers ->
+                setAchievements(result)
                 isCalling = false
+            }
+        val onHTTPError: ((Int, String, ResponseBody?) -> Unit)? = { code: Int, message: String, _: ResponseBody? ->
+            toast(String.format("%d: %s", code, message))
+            gridDataset.adapter?.let {
+                it as AchievementsAdapter
+                it.stopLoading()
+            }
         }
         isCalling = true
         httpCall(GuildWars2API.getService()
-            .GET_AchievementCategories(group.flattenCategories(), 0), callback)
+            .GET_Achievements(category.flattenAchievements()), callback, onHTTPError)
     }
 
-    private fun setAchievementCategories(source: List<AchievementCategory>) {
-        val insertionPoint = categories.size
-        categories.addAll(source)
+    private fun setAchievements(source: List<Achievement>) {
+        val insertionPoint = achievements.size
+        achievements.addAll(source)
         gridDataset.adapter?.let {
-            if (it is AchievementCategoriesAdapter) {
+            if (it is AchievementsAdapter) {
                 // it.notifyItemRangeInserted(insertionPoint, source.size)
                 it.notifyDataSetChanged()
                 it.stopLoading()
             }
+            gridDataset.addOnScrollListener(onScrollListener)
         }
-        gridDataset.addOnScrollListener(onScrollListener)
+
     }
 
     private val onScrollListener = object: RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             recyclerView.adapter?.let {
-                val adapter = it as AchievementCategoriesAdapter
+                val adapter = it as AchievementsAdapter
                 recyclerView.layoutManager?.let {
                     it as LinearLayoutManager
                     if (!adapter.isStopLoading && !isCalling &&
                         it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
                         recyclerView.removeOnScrollListener(this)
-                        GET_AchievementCategories()
+                        GET_Achievements()
                     }
                 }
             }
@@ -132,11 +141,18 @@ class AchievementCategoriesFragment : BaseFragment() {
     }
 
     companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param category Parameter 1.
+         * @return A new instance of fragment AchievementsFragment.
+         */
         @JvmStatic
-        fun newInstance(group: AchievementGroup): AchievementCategoriesFragment =
-            AchievementCategoriesFragment().apply {
+        fun newInstance(category: AchievementCategory) =
+            AchievementsFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ACHIEVEMENT_GROUP, group)
+                    putParcelable(CATEGORY, category)
                 }
             }
     }

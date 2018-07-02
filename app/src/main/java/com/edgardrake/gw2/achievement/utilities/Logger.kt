@@ -26,7 +26,7 @@ class Logger(val context: Context) {
 
         AlertDialog.Builder(context)
             .setView(mDialog)
-            .setPositiveButton(android.R.string.ok, { dialog, id -> dialog.dismiss() })
+            .setPositiveButton(android.R.string.ok, { dialog, _ -> dialog.dismiss() })
             .create()
             .show()
     }

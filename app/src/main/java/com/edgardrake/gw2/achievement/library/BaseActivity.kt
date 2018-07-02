@@ -73,9 +73,16 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
 
-        val callback: (Response<T>) -> Unit = { result ->
-            result.body()?.let {
-                onHttpSuccess(it, result.headers())
+        val callback: (Response<T>) -> Unit = { response ->
+            if (response.code() == 200) {
+                response.body()?.let {
+                    onHttpSuccess(it, response.headers())
+                }
+            } else {
+                val code = response.code()
+                response.errorBody()?.let {
+                    onHttpError?.invoke(code, it.string(), it)
+                }
             }
         }
 
