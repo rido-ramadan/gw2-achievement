@@ -22,8 +22,8 @@ import java.util.*
 abstract class BaseActivity : AppCompatActivity() {
 
     protected var httpCallbacks = CompositeDisposable()
-    protected var fragmentTitle = Stack<String>()
-    protected var activityTitle: String?
+    protected var prevTitles = Stack<String>()
+    protected var currentTitle: String?
         get() = supportActionBar?.title.toString()
         set(value) {
             supportActionBar?.title = value
@@ -58,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStack()
-            activityTitle = fragmentTitle.pop()
+            if (!prevTitles.empty()) currentTitle = prevTitles.pop()
         } else {
             super.onBackPressed()
         }
@@ -91,9 +91,9 @@ abstract class BaseActivity : AppCompatActivity() {
             transaction.addToBackStack(title)
                 .commit()
             // Push a title for new fragment. Must not be null
-            var nextTitle = if (TextUtils.isEmpty(title)) activityTitle else title
-            fragmentTitle.push(activityTitle)
-            activityTitle = nextTitle
+            var nextTitle = if (TextUtils.isEmpty(title)) currentTitle else title
+            prevTitles.push(currentTitle)
+            currentTitle = nextTitle
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         } else {
             transaction.commitNow()
