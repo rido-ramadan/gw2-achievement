@@ -54,17 +54,19 @@ class AchievementCategoriesFragment : BaseFragment() {
         achievementTitle.text = group.name
 
         // Set up RecyclerView
-        val onItemClick = { _: Int, data: AchievementCategory ->
-            if (getHostActivity() is AchievementGroupsActivity) {
-                getHostActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.achievementCategoryDetail, AchievementsFragment.newInstance(data))
-                    .commitNow()
+        val onItemClick: (Int, AchievementCategory) -> Unit = { _: Int, data: AchievementCategory ->
+            if (getHostActivity().findViewById<ViewGroup>(R.id.achievementCategoryDetail) != null) {
+                getHostActivity().setFragment(AchievementsFragment.newInstance(data), "",
+                    R.id.achievementCategoryDetail, false)
             } else {
-                AchievementsActivity.startThisActivity(getHostActivity(), data)
+                getHostActivity().setFragment(AchievementsFragment.newInstance(data), data.name,
+                    R.id.fragmentContainer, true)
             }
         }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick)
+        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick).apply {
+            if (!categories.isEmpty()) stopLoading()
+        }
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
@@ -87,7 +89,6 @@ class AchievementCategoriesFragment : BaseFragment() {
                 it.resetLoading()
                 it.notifyDataSetChanged()
             }
-            GET_AchievementCategories()
         }
     }
 

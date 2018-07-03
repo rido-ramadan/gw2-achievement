@@ -1,6 +1,9 @@
 package com.edgardrake.gw2.achievement.library
 
+import android.support.annotation.IdRes
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -14,10 +17,17 @@ import okhttp3.Headers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
+import java.util.*
 
 abstract class BaseActivity : AppCompatActivity() {
 
     protected var httpCallbacks = CompositeDisposable()
+    protected var prevTitles = Stack<String>()
+    protected var currentTitle: String?
+        get() = supportActionBar?.title.toString()
+        set(value) {
+            supportActionBar?.title = value
+        }
 
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
@@ -32,17 +42,27 @@ abstract class BaseActivity : AppCompatActivity() {
     fun initializeView() {
         ButterKnife.bind(this)
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
-                finish()
+                onBackPressed()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+            if (!prevTitles.empty()) currentTitle = prevTitles.pop()
+        } else {
+            super.onBackPressed()
+        }
+        supportActionBar?.setDisplayHomeAsUpEnabled(supportFragmentManager.backStackEntryCount > 1)
     }
 
     override fun onDestroy() {
@@ -56,6 +76,28 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun getApp(): BaseApplication {
         return super.getApplication() as BaseApplication
+    }
+
+    /**
+     * Set the [fragment] to the specified layout ID [resID]. If [title] is not empty String,
+     * change the support action bar title to the [title]. If [backstack] is true, then perform
+     * fragment replacement rather than set up a fragment to other location
+     */
+    fun setFragment(fragment: Fragment, title: String, @IdRes resID: Int, backstack: Boolean) {
+        val transaction = supportFragmentManager.beginTransaction()
+            .replace(resID, fragment, title)
+
+        if (backstack) {
+            transaction.addToBackStack(title)
+                .commit()
+            // Push a title for new fragment. Must not be null
+            var nextTitle = if (TextUtils.isEmpty(title)) currentTitle else title
+            prevTitles.push(currentTitle)
+            currentTitle = nextTitle
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        } else {
+            transaction.commitNow()
+        }
     }
 
     @JvmOverloads

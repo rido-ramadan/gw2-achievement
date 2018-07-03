@@ -41,7 +41,6 @@ class AchievementGroupsActivity : BaseActivity() {
                 it.resetLoading()
                 it.notifyDataSetChanged()
             }
-            GET_AllAchievementGroups()
         }
     }
 
@@ -67,11 +66,11 @@ class AchievementGroupsActivity : BaseActivity() {
 
     private fun actionOpenCategory(group: AchievementGroup) {
         if (achievementGroupDetail != null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.achievementGroupDetail, AchievementCategoriesFragment.newInstance(group))
-                .commitNow()
+            setFragment(AchievementCategoriesFragment.newInstance(group),
+                "", R.id.achievementGroupDetail, false)
         } else {
-            AchievementCategoriesActivity.startThisActivity(this, group)
+            setFragment(AchievementCategoriesFragment.newInstance(group),
+                group.name, R.id.fragmentContainer, true)
         }
     }
 
