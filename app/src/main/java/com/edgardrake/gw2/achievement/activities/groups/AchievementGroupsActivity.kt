@@ -41,7 +41,6 @@ class AchievementGroupsActivity : BaseActivity() {
                 it.resetLoading()
                 it.notifyDataSetChanged()
             }
-            GET_AllAchievementGroups()
         }
     }
 

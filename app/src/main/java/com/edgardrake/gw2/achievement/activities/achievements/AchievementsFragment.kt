@@ -92,7 +92,6 @@ class AchievementsFragment : BaseFragment() {
                 it.resetLoading()
                 it.notifyDataSetChanged()
             }
-            GET_Achievements()
         }
     }
 
