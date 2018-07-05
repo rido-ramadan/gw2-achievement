@@ -3,27 +3,27 @@ package com.edgardrake.gw2.achievement.models
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
+import java.io.Serializable
 
-@Parcelize
+
 data class Achievement(
     val id: Int,
     val name: String,
-    val icon: String? = null,
+    var icon: String? = null,
     val description: String?,
     val requirement: String,
     val locked_text: String?,
     val type: AchievementType,
-    val flags: List<Flag>,
-    val tiers: List<@RawValue Tier>? = null,
+    val flags: List<Flag>?,
+    val tiers: List<Tier>? = null,
     val prerequisites: List<Int>? = null,
-    val bits: List<@RawValue Bit>? = null,
+    val bits: List<Bit>? = null,
     val point_cap: Int? = null
-    ): Parcelable {
+    ): Serializable {
 
     enum class AchievementType {
-        @SerializedName("Default") DEFAULT,
-        @SerializedName("ItemSet") ITEM_SET
+        @SerializedName("Default") DEFAULT { override fun toString() = "Default" },
+        @SerializedName("ItemSet") ITEM_SET { override fun toString() = "ItemSet" }
     }
 
     enum class Flag {
@@ -40,7 +40,8 @@ data class Achievement(
         @SerializedName("Permanent") PERMANENT
     }
 
-    data class Tier(val count: Int, val points: Int)
+    @Parcelize
+    data class Tier(val count: Int, val points: Int): Parcelable, Serializable
 
     enum class RewardType {
         @SerializedName("Text") TEXT,
@@ -49,7 +50,8 @@ data class Achievement(
         @SerializedName("Skin") SKIN
     }
 
+    @Parcelize
     data class Bit(val id: Int,
-                   val type: RewardType,
-                   val text: String? = null)
+                   val type: RewardType?,
+                   val text: String? = null): Parcelable, Serializable
 }
