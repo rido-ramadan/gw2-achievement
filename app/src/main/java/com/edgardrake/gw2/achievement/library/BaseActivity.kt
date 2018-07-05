@@ -3,16 +3,17 @@ package com.edgardrake.gw2.achievement.library
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import butterknife.ButterKnife
+import com.edgardrake.gw2.achievement.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.toolbar_fixed.*
 import okhttp3.Headers
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -41,7 +42,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun initializeView() {
         ButterKnife.bind(this)
-        setSupportActionBar(toolbar)
+        findViewById<Toolbar>(R.id.toolbar)?.let {
+            setSupportActionBar(it)
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 

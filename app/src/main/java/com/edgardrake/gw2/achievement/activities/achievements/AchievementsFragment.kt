@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.activities.detail.AchievementDetailActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
@@ -60,14 +61,16 @@ class AchievementsFragment : BaseFragment() {
 
         // Set up RecyclerView
         val onItemClick = { _: Int, data: Achievement ->
-            Logger(getHostActivity())
-                .addEntry("Name", data.name)
-                .addEntry("Description", data.description)
-                .addEntry("Requirement", data.requirement)
-                .show()
+//            Logger(getHostActivity())
+//                .addEntry("Name", data.name)
+//                .addEntry("Description", data.description)
+//                .addEntry("Requirement", data.requirement)
+//                .show()
+            AchievementDetailActivity.startThisActivity(getHostActivity(), data)
         }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementsAdapter(achievements, category.icon, onItemClick).apply {
+        gridDataset.adapter = AchievementsAdapter(achievements, category.icon,
+            actionViewAchievement).apply {
             if (!achievements.isEmpty()) stopLoading()
         }
         gridDataset.layoutManager?.let {
@@ -93,6 +96,11 @@ class AchievementsFragment : BaseFragment() {
                 it.notifyDataSetChanged()
             }
         }
+    }
+
+    private val actionViewAchievement: (pos: Int, achievement: Achievement) -> Unit = { _, achievement ->
+        if (TextUtils.isEmpty(achievement.icon)) achievement.icon = category.icon
+        AchievementDetailActivity.startThisActivity(getHostActivity(), achievement)
     }
 
     private fun GET_Achievements() {
