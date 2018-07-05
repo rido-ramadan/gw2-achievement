@@ -2,24 +2,28 @@ package com.edgardrake.gw2.achievement.activities.detail
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.text.TextUtils
 import android.view.View
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.utilities.GlideApp
 import kotlinx.android.synthetic.main.activity_achievement_detail.*
-import java.io.Serializable
 
 class AchievementDetailActivity : BaseActivity() {
 
     private lateinit var achievement: Achievement
     private var mName: String
-        get() = achievementTitle.text.toString()
+        get() = currentTitle!!
         set(value) {
-            achievementTitle.text = value
             currentTitle = value
         }
     private var mRequirement: String
@@ -36,7 +40,8 @@ class AchievementDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_achievement_detail)
 
-        achievement = intent.getSerializableExtra(ACHIEVEMENT) as Achievement
+        // achievement = intent.getSerializableExtra(ACHIEVEMENT) as Achievement
+        achievement = intent.getParcelableExtra(ACHIEVEMENT)
         mName = achievement.name
         mDescription = achievement.description
         mRequirement = achievement.requirement
@@ -59,7 +64,7 @@ class AchievementDetailActivity : BaseActivity() {
         @JvmStatic
         fun startThisActivity(context: Context, achievement: Achievement) {
             context.startActivity(Intent(context, AchievementDetailActivity::class.java)
-                .putExtra(ACHIEVEMENT, achievement as Serializable)) //Todo: Path of Fire > Elon > Skimmer
+                .putExtra(ACHIEVEMENT, achievement as Parcelable))
         }
     }
 }

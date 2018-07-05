@@ -98,8 +98,9 @@ class AchievementsFragment : BaseFragment() {
         }
     }
 
-    private val actionViewAchievement: (pos: Int, achievement: Achievement) -> Unit = {
-        _, achievement -> AchievementDetailActivity.startThisActivity(getHostActivity(), achievement)
+    private val actionViewAchievement: (pos: Int, achievement: Achievement) -> Unit = { _, achievement ->
+        if (TextUtils.isEmpty(achievement.icon)) achievement.icon = category.icon
+        AchievementDetailActivity.startThisActivity(getHostActivity(), achievement)
     }
 
     private fun GET_Achievements() {
