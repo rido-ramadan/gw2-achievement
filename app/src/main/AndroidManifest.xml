@@ -22,11 +22,12 @@
         </activity>
         <activity
             android:name=".activities.categories.AchievementCategoriesActivity"
-            android:label="@string/title_activity_achievement_categories"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".activities.achievements.AchievementsActivity">
-        </activity>
+            android:label="@string/title_activity_achievement_categories"/>
+        <activity
+            android:name=".activities.achievements.AchievementsActivity"/>
+        <activity
+            android:name=".activities.detail.AchievementDetailActivity"
+            android:label="Achievement"/>
     </application>
 
 </manifest>
