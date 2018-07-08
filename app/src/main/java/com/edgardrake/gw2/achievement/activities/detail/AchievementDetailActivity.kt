@@ -2,16 +2,11 @@ package com.edgardrake.gw2.achievement.activities.detail
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.text.TextUtils
 import android.view.View
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.library.BaseActivity
 import com.edgardrake.gw2.achievement.models.Achievement
