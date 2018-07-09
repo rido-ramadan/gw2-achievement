@@ -60,14 +60,6 @@ class AchievementsFragment : BaseFragment() {
             View.VISIBLE else View.GONE
 
         // Set up RecyclerView
-        val onItemClick = { _: Int, data: Achievement ->
-//            Logger(getHostActivity())
-//                .addEntry("Name", data.name)
-//                .addEntry("Description", data.description)
-//                .addEntry("Requirement", data.requirement)
-//                .show()
-            AchievementDetailActivity.startThisActivity(getHostActivity(), data)
-        }
         gridDataset.setHasFixedSize(true)
         gridDataset.adapter = AchievementsAdapter(achievements, category.icon,
             actionViewAchievement).apply {
