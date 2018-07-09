@@ -3,6 +3,7 @@ package com.edgardrake.gw2.achievement.https
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
+import com.edgardrake.gw2.achievement.utilities.GW2_BASE_API_URL
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -33,7 +34,7 @@ interface GuildWars2API {
                     .build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("https://api.guildwars2.com/v2/")
+                .baseUrl(GW2_BASE_API_URL)
                 .build()
                 .create(GuildWars2API::class.java)
         }
