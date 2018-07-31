@@ -10,7 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.ButterKnife
 import com.edgardrake.gw2.achievement.R
-import io.reactivex.Observable
+import com.edgardrake.gw2.achievement.https.HTTPResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -104,7 +104,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     @JvmOverloads
-    fun <T> httpCall(request: Observable<Response<T>>,
+    fun <T> httpCall(request: HTTPResponse<T>,
                      onHttpSuccess: ((T, Headers) -> Unit),
                      onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
                      onGenericError: ((t: Throwable) -> Unit)? = {exception -> throw exception}) {

@@ -1,8 +1,7 @@
-package com.edgardrake.gw2.achievement.library
+package com.edgardrake.gw2.achievement.https
 
-import android.support.v4.app.Fragment
 import android.util.Log
-import com.edgardrake.gw2.achievement.https.HTTPResponse
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -11,28 +10,46 @@ import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
-abstract class BaseFragment : Fragment() {
+/**
+ * Wrapper type for [Observable]. Shorter version of Observable<Response<T>>
+ */
+typealias HTTPResponse<T> = Observable<Response<T>>
+
+/**
+ * [Int]: HTTP Response code [400-5xx]
+ * [String]: HTTP Error message
+ * [ResponseBody]: Retrofit response
+ */
+typealias HTTPError = (code: Int, message: String, response: ResponseBody?) -> Unit
+
+/**
+ * [Throwable]: Exception error class
+ */
+typealias ExceptionError = ((exception: Throwable) -> Unit)
+
+/**
+ * Created by Rido Ramadan (rido.ramadan@gmail.com) on 31/07/18
+ */
+class HTTPRequester {
 
     protected var httpCallbacks : CompositeDisposable = CompositeDisposable()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    fun onDestroy() {
         httpCallbacks.dispose()
     }
 
-    protected fun getHostActivity() : BaseActivity {
-        return requireActivity() as BaseActivity
-    }
-
     @JvmOverloads
-    fun <T> httpCall(request: HTTPResponse<T>,
-                     onHttpSuccess: ((T, Headers) -> Unit),
-                     onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
-                     onGenericError: ((t: Throwable) -> Unit)? = {exception -> throw exception}) {
-        val onError: (error: Throwable) -> Unit = { error: Throwable ->
+    fun <T> call(request: HTTPResponse<T>,
+                 onHttpSuccess: ((T, Headers) -> Unit),
+                 onHttpError: HTTPError? = null,
+                 onGenericError: ExceptionError? = { exception -> throw exception}) {
+
+        val onError: ExceptionError = { error: Throwable ->
             if (error is HttpException) {
                 Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-                onHttpError?.invoke(error.code(), error.response().message(), error.response().errorBody())
+                onHttpError?.invoke(error.code(),
+                    error.response().message(),
+                    error.response().errorBody())
             } else {
                 Log.e("Exception", "${error.message}")
                 onGenericError?.invoke(error)
