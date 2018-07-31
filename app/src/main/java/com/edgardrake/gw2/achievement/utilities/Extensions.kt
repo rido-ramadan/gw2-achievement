@@ -2,6 +2,7 @@ package com.edgardrake.gw2.achievement.utilities
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.support.annotation.LayoutRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import com.edgardrake.gw2.achievement.library.BaseApplication
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -29,16 +31,6 @@ fun EditText.onChange(callback: (String) -> Unit) {
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
     })
-}
-
-fun <T> Observable<T>.httpCall(callback: ((T) -> Unit),
-                               onError: ((Throwable) -> Unit) = {
-                                   error: Throwable ->
-                                    if (error is HttpException) {Log.e("HTTP-Error", "${error.code()}: ${error.message()}")}
-                                    else {Log.e("Exception", "${error.message}")}}) {
-    this.subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(callback, onError)
 }
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int): View =
@@ -73,7 +65,14 @@ fun Fragment.toast(resID: Int) {
 }
 
 fun Fragment.snackbar(text: String) {
-    Snackbar.make(requireActivity().findViewById<ViewGroup>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+    Snackbar.make(requireActivity()
+        .findViewById<ViewGroup>(android.R.id.content), text, Snackbar.LENGTH_SHORT)
         .setAction(android.R.string.ok, null)
         .show()
 }
+
+inline val Int.dp : Int
+    get() = Math.round(this * Resources.getSystem().getDisplayMetrics().density)
+
+inline val Float.dp : Int
+    get() = Math.round(this * Resources.getSystem().getDisplayMetrics().density)

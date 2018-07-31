@@ -49,7 +49,7 @@ class AchievementGroupsActivity : BaseActivity() {
             setAchievementGroup(result)
             maxPage = headers["X-Page-Total"]!!.toInt()
         }
-        httpCall(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
+        httpClient.call(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
     }
 
     private fun setAchievementGroup(dataset: List<AchievementGroup>) {

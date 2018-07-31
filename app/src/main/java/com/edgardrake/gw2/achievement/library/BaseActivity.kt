@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.ButterKnife
 import com.edgardrake.gw2.achievement.R
+import com.edgardrake.gw2.achievement.https.HTTPRequester
 import com.edgardrake.gw2.achievement.https.HTTPResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +23,7 @@ import java.util.*
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected var httpCallbacks = CompositeDisposable()
+    protected var httpClient = HTTPRequester()
     protected var prevTitles = Stack<String>()
     protected var currentTitle: String?
         get() = supportActionBar?.title.toString()
@@ -70,7 +71,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        httpCallbacks.dispose()
+        httpClient.onDestroy()
     }
 
     protected fun getActivity() : BaseActivity {
@@ -101,38 +102,5 @@ abstract class BaseActivity : AppCompatActivity() {
         } else {
             transaction.commitNow()
         }
-    }
-
-    @JvmOverloads
-    fun <T> httpCall(request: HTTPResponse<T>,
-                     onHttpSuccess: ((T, Headers) -> Unit),
-                     onHttpError: ((code: Int, message: String, response: ResponseBody?) -> Unit)? = null,
-                     onGenericError: ((t: Throwable) -> Unit)? = {exception -> throw exception}) {
-        val onError: (error: Throwable) -> Unit = { error: Throwable ->
-            if (error is HttpException) {
-                Log.e("HTTP-Error", "${error.code()}: ${error.message()}")
-                onHttpError?.invoke(error.code(), error.response().message(), error.response().errorBody())
-            } else {
-                Log.e("Exception", "${error.message}")
-                onGenericError?.invoke(error)
-            }
-        }
-
-        val callback: (Response<T>) -> Unit = { response ->
-            if (response.code() == 200) {
-                response.body()?.let {
-                    onHttpSuccess(it, response.headers())
-                }
-            } else {
-                val code = response.code()
-                response.errorBody()?.let {
-                    onHttpError?.invoke(code, it.string(), it)
-                }
-            }
-        }
-
-        httpCallbacks.add(request.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(callback, onError))
     }
 }

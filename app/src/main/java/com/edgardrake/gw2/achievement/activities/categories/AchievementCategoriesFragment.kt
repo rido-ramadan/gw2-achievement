@@ -4,21 +4,15 @@ import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.activities.achievements.AchievementsActivity
 import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
-import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupAdapter
-import com.edgardrake.gw2.achievement.activities.groups.AchievementGroupsActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.utilities.Logger
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
@@ -55,11 +49,11 @@ class AchievementCategoriesFragment : BaseFragment() {
 
         // Set up RecyclerView
         val onItemClick: (Int, AchievementCategory) -> Unit = { _: Int, data: AchievementCategory ->
-            if (getHostActivity().findViewById<ViewGroup>(R.id.achievementCategoryDetail) != null) {
-                getHostActivity().setFragment(AchievementsFragment.newInstance(data), "",
+            if (hostActivity.findViewById<ViewGroup>(R.id.achievementCategoryDetail) != null) {
+                hostActivity.setFragment(AchievementsFragment.newInstance(data), "",
                     R.id.achievementCategoryDetail, false)
             } else {
-                getHostActivity().setFragment(AchievementsFragment.newInstance(data), data.name,
+                hostActivity.setFragment(AchievementsFragment.newInstance(data), data.name,
                     R.id.fragmentContainer, true)
             }
         }
@@ -72,7 +66,7 @@ class AchievementCategoriesFragment : BaseFragment() {
                 it.setLookupSize { position ->
                     when (gridDataset.adapter?.getItemViewType(position)) {
                         R.layout.grid_loading_view_holder ->
-                            requireContext().resources.getInteger(R.integer.grid_column)
+                            hostActivity.resources.getInteger(R.integer.grid_column)
                         else -> 1
                     }
                 }
@@ -99,7 +93,7 @@ class AchievementCategoriesFragment : BaseFragment() {
                 isCalling = false
         }
         isCalling = true
-        httpCall(GuildWars2API.getService()
+        httpClient.call(GuildWars2API.getService()
             .GET_AchievementCategories(group.flattenCategories(), 0), callback)
     }
 

@@ -16,7 +16,9 @@ import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
-import com.edgardrake.gw2.achievement.utilities.*
+import com.edgardrake.gw2.achievement.utilities.GlideApp
+import com.edgardrake.gw2.achievement.utilities.setLookupSize
+import com.edgardrake.gw2.achievement.utilities.toast
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
 import okhttp3.ResponseBody
@@ -66,7 +68,7 @@ class AchievementsFragment : BaseFragment() {
 //                .addEntry("Description", data.description)
 //                .addEntry("Requirement", data.requirement)
 //                .show()
-            AchievementDetailActivity.startThisActivity(getHostActivity(), data)
+            AchievementDetailActivity.startThisActivity(hostActivity, data)
         }
         gridDataset.setHasFixedSize(true)
         gridDataset.adapter = AchievementsAdapter(achievements, category.icon,
@@ -100,7 +102,7 @@ class AchievementsFragment : BaseFragment() {
 
     private val actionViewAchievement: (pos: Int, achievement: Achievement) -> Unit = { _, achievement ->
         if (TextUtils.isEmpty(achievement.icon)) achievement.icon = category.icon
-        AchievementDetailActivity.startThisActivity(getHostActivity(), achievement)
+        AchievementDetailActivity.startThisActivity(hostActivity, achievement)
     }
 
     private fun GET_Achievements() {
@@ -117,7 +119,7 @@ class AchievementsFragment : BaseFragment() {
             }
         }
         isCalling = true
-        httpCall(GuildWars2API.getService()
+        httpClient.call(GuildWars2API.getService()
             .GET_Achievements(category.flattenAchievements()), callback, onHTTPError)
     }
 
