@@ -62,19 +62,11 @@ class AchievementsFragment : BaseFragment() {
             View.VISIBLE else View.GONE
 
         // Set up RecyclerView
-        val onItemClick = { _: Int, data: Achievement ->
-//            Logger(getHostActivity())
-//                .addEntry("Name", data.name)
-//                .addEntry("Description", data.description)
-//                .addEntry("Requirement", data.requirement)
-//                .show()
-            AchievementDetailActivity.startThisActivity(hostActivity, data)
-        }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementsAdapter(achievements, category.icon,
-            actionViewAchievement).apply {
-            if (!achievements.isEmpty()) stopLoading()
-        }
+        gridDataset.adapter = AchievementsAdapter(achievements, category.icon, actionViewAchievement)
+            .apply {
+                if (!achievements.isEmpty()) stopLoading()
+            }
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
@@ -158,7 +150,7 @@ class AchievementsFragment : BaseFragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param category Parameter 1.
+         * @param category The Achievement Category data.
          * @return A new instance of fragment AchievementsFragment.
          */
         @JvmStatic
