@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import butterknife.ButterKnife
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.https.HTTPRequester
@@ -41,7 +42,7 @@ abstract class BaseActivity : AppCompatActivity() {
         initializeView()
     }
 
-    fun initializeView() {
+    private fun initializeView() {
         ButterKnife.bind(this)
         findViewById<Toolbar>(R.id.toolbar)?.let {
             setSupportActionBar(it)
@@ -87,20 +88,30 @@ abstract class BaseActivity : AppCompatActivity() {
      * change the support action bar title to the [title]. If [backstack] is true, then perform
      * fragment replacement rather than set up a fragment to other location
      */
-    fun setFragment(fragment: Fragment, title: String, @IdRes resID: Int, backstack: Boolean) {
-        val transaction = supportFragmentManager.beginTransaction()
+    fun setFragment(fragment: Fragment, title: String?, @IdRes resID: Int, backstack: Boolean) {
+        val transaction = supportFragmentManager
+            .beginTransaction()
             .replace(resID, fragment, title)
 
         if (backstack) {
             transaction.addToBackStack(title)
                 .commit()
             // Push a title for new fragment. Must not be null
-            var nextTitle = if (TextUtils.isEmpty(title)) currentTitle else title
+            val nextTitle = if (title.isNullOrEmpty()) currentTitle else title
             prevTitles.push(currentTitle)
             currentTitle = nextTitle
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         } else {
             transaction.commitNow()
         }
+    }
+
+    /**
+     * Inflate the [fragment] to the specified [parent]. If [title] is not empty String,
+     * change the support action bar title to the [title]. If [backstack] is true, then perform
+     * fragment replacement rather than set up a fragment to other location
+     */
+    fun setFragment(fragment: Fragment, title: String, parent: ViewGroup, backstack: Boolean) {
+        setFragment(fragment, title, parent.id, backstack)
     }
 }

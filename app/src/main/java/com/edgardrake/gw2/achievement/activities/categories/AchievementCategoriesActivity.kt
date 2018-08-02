@@ -20,9 +20,8 @@ class AchievementCategoriesActivity : BaseActivity() {
         group = intent.getParcelableExtra(ACHIEVEMENT_GROUP)
         currentTitle = group.name
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, AchievementCategoriesFragment.newInstance(group))
-            .commitNow()
+        setFragment(AchievementCategoriesFragment.newInstance(group), null,
+            R.id.fragmentContainer, false)
     }
 
     companion object {

@@ -13,15 +13,16 @@ import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
+import com.edgardrake.gw2.achievement.utilities.getInt
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
 
+private const val ACHIEVEMENT_GROUP = "data"
+
 /**
  * A placeholder fragment containing a simple view.
  */
-private const val ACHIEVEMENT_GROUP = "data"
-
 class AchievementCategoriesFragment : BaseFragment() {
 
     private lateinit var group: AchievementGroup
@@ -65,8 +66,7 @@ class AchievementCategoriesFragment : BaseFragment() {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
                     when (gridDataset.adapter?.getItemViewType(position)) {
-                        R.layout.grid_loading_view_holder ->
-                            hostActivity.resources.getInteger(R.integer.grid_column)
+                        R.layout.grid_loading_view_holder -> R.integer.grid_column.getInt()
                         else -> 1
                     }
                 }

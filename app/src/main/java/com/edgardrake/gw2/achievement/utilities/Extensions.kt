@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -76,3 +77,9 @@ inline val Int.dp : Int
 
 inline val Float.dp : Int
     get() = Math.round(this * Resources.getSystem().getDisplayMetrics().density)
+
+fun Int.getInt() : Int = BaseApplication.instance.resources.getInteger(this)
+
+fun Int.getString() : String = BaseApplication.instance.getString(this)
+
+fun Int.getString(varargs: Any) : String = BaseApplication.instance.getString(this, varargs)
