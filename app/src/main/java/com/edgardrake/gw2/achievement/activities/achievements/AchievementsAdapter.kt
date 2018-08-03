@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.utilities.GlideApp
-import com.edgardrake.gw2.achievement.widgets.LoadingViewHolder
+import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
 class AchievementsAdapter(val dataset: List<Achievement>,

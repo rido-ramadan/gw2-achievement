@@ -87,10 +87,9 @@ class AchievementCategoriesFragment : BaseFragment() {
     }
 
     private fun GET_AchievementCategories() {
-        val callback: (List<AchievementCategory>, Headers) -> Unit =
-            {result: List<AchievementCategory>, _: Headers ->
-                setAchievementCategories(result)
-                isCalling = false
+        val callback = { result: List<AchievementCategory>, _: Headers ->
+            setAchievementCategories(result)
+            isCalling = false
         }
         isCalling = true
         httpClient.call(GuildWars2API.getService()
@@ -112,12 +111,12 @@ class AchievementCategoriesFragment : BaseFragment() {
 
     private val onScrollListener = object: RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            recyclerView.adapter?.let {
-                val adapter = it as AchievementCategoriesAdapter
-                recyclerView.layoutManager?.let {
-                    it as LinearLayoutManager
+            recyclerView.adapter?.let { adapter ->
+                adapter as AchievementCategoriesAdapter
+                recyclerView.layoutManager?.let { manager ->
+                    manager as LinearLayoutManager
                     if (!adapter.isStopLoading && !isCalling &&
-                        it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
+                        manager.itemCount <= manager.findFirstVisibleItemPosition() + manager.childCount) {
                         recyclerView.removeOnScrollListener(this)
                         GET_AchievementCategories()
                     }

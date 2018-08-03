@@ -1,18 +1,19 @@
 package com.edgardrake.gw2.achievement.utilities
 
 import android.content.Context
+import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.library.BaseApplication
 import kotlinx.android.synthetic.main.logger_dialog.view.*
 import kotlinx.android.synthetic.main.logger_entry.view.*
 
+@Suppress("unused")
 class Logger(val context: Context) {
 
-    private val entries = ArrayList<Pair<String, String>>()
+    private val entries = mutableListOf<Pair<String, String>>()
 
     fun addEntry(key: String?, value: String?) : Logger {
         entries.add(Pair(key ?: "", value ?: ""))
@@ -24,9 +25,11 @@ class Logger(val context: Context) {
         mDialog.logDataset.adapter = LoggerAdapter(entries)
         mDialog.logDataset.setHasFixedSize(true)
 
+        val onOkClicked = { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+
         AlertDialog.Builder(context)
             .setView(mDialog)
-            .setPositiveButton(android.R.string.ok, { dialog, _ -> dialog.dismiss() })
+            .setPositiveButton(android.R.string.ok, onOkClicked)
             .create()
             .show()
     }

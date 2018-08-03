@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.widgets.LoadingViewHolder
+import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
 import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 
 class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
