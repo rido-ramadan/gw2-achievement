@@ -3,7 +3,7 @@ package com.edgardrake.gw2.achievement.widgets.recycler
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.utilities.inflate
+import com.edgardrake.multipurpose.utilities.inflate
 
 class LoadingViewHolder(parent: ViewGroup):
     RecyclerView.ViewHolder(parent.inflate(LAYOUT_ID)) {

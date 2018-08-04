@@ -1,4 +1,4 @@
-package com.edgardrake.gw2.achievement.library
+package com.edgardrake.multipurpose.base
 
 import android.app.Application
 

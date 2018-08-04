@@ -18,9 +18,9 @@ import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.utilities.GlideApp
-import com.edgardrake.gw2.achievement.utilities.flatten
-import com.edgardrake.gw2.achievement.utilities.setLookupSize
-import com.edgardrake.gw2.achievement.utilities.toast
+import com.edgardrake.multipurpose.utilities.flatten
+import com.edgardrake.multipurpose.utilities.setLookupSize
+import com.edgardrake.multipurpose.utilities.toast
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
 import okhttp3.ResponseBody

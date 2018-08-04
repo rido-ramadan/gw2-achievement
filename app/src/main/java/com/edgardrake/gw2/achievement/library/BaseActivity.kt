@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.edgardrake.multipurpose.base.BaseApplication
 import com.edgardrake.multipurpose.https.HTTPRequester
 import java.util.*
 

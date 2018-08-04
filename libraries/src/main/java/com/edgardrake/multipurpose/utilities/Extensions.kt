@@ -1,27 +1,21 @@
-package com.edgardrake.gw2.achievement.utilities
+package com.edgardrake.multipurpose.utilities
 
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.support.annotation.LayoutRes
-import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import com.edgardrake.gw2.achievement.library.BaseApplication
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
+import com.edgardrake.multipurpose.base.BaseApplication
 
 fun EditText.onChange(callback: (String) -> Unit) {
     this.addTextChangedListener(object: TextWatcher {
