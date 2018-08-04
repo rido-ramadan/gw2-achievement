@@ -3,16 +3,13 @@ package com.edgardrake.gw2.achievement.activities.groups
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
-import com.edgardrake.gw2.achievement.library.BaseFragment
+import com.edgardrake.gw2.achievement.library.PagingFragment
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import kotlinx.android.synthetic.main.fragment_achievement_group.*
 import okhttp3.Headers
@@ -22,11 +19,11 @@ import okhttp3.Headers
  * Use the [AchievementGroupsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AchievementGroupsFragment : BaseFragment() {
+class AchievementGroupsFragment : PagingFragment() {
 
     private var groups = ArrayList<AchievementGroup>()
-    private var isCalling = false
-    var maxPage: Int? = null
+
+    private var maxPage: Int? = null
         private set(value) { if (value != null) field = value }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -38,18 +35,14 @@ class AchievementGroupsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val onClick = {_: Int, data: AchievementGroup -> actionOpenCategory(data)}
-        gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementGroupAdapter(groups, onClick)
-        gridDataset.addOnScrollListener(onScrollListener)
+        val onScroll = { GET_AllAchievementGroups() }
+
+        adapter = AchievementGroupAdapter(groups, onClick, onScroll, isPagingEnabled)
+            .apply { attachTo(gridDataset) }
 
         refreshContainer.setOnRefreshListener {
             refreshContainer.isRefreshing = false
-            groups.clear()
-            gridDataset.adapter?.let {
-                it as AchievementGroupAdapter
-                it.resetLoading()
-                it.notifyDataSetChanged()
-            }
+            adapterReset()
         }
     }
 
@@ -57,20 +50,24 @@ class AchievementGroupsFragment : BaseFragment() {
         val onSuccess = { result: List<AchievementGroup>, headers: Headers ->
             setAchievementGroup(result)
             maxPage = headers["X-Page-Total"]!!.toInt()
+
+            currentPage++
+            if (currentPage >= maxPage!!) {
+                adapterStop()
+            }
         }
-        httpClient.call(GuildWars2API.getService().GET_AchievementGroups(), onSuccess)
+        httpClient.call(GuildWars2API.getService().GET_AchievementGroups(currentPage), onSuccess)
     }
 
     private fun setAchievementGroup(dataset: List<AchievementGroup>) {
         refreshContainer.isRefreshing = false
 
         groups.addAll(dataset)
-        gridDataset.adapter?.let {
-            it as AchievementGroupAdapter
-            it.notifyDataSetChanged()
-            it.stopLoading()
+
+        adapter.run {
+            onNextPageLoaded()
+            notifyDataSetChanged()
         }
-        gridDataset.addOnScrollListener(onScrollListener)
     }
 
     private fun actionOpenCategory(group: AchievementGroup) {
@@ -80,22 +77,6 @@ class AchievementGroupsFragment : BaseFragment() {
         } else {
             hostActivity.setFragment(AchievementCategoriesFragment.newInstance(group),
                 group.name, R.id.fragmentContainer, true)
-        }
-    }
-
-    private val onScrollListener = object: RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            recyclerView.adapter?.let {
-                val adapter = it as AchievementGroupAdapter
-                recyclerView.layoutManager?.let {
-                    it as LinearLayoutManager
-                    if (!adapter.isStopLoading && !isCalling &&
-                        it.itemCount <= it.findFirstVisibleItemPosition() + it.childCount) {
-                        recyclerView.removeOnScrollListener(this)
-                        GET_AllAchievementGroups()
-                    }
-                }
-            }
         }
     }
 

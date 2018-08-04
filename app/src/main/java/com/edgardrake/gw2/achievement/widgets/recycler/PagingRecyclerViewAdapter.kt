@@ -5,25 +5,47 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 
-abstract class PagingRecyclerViewAdapter<T>(val dataset: MutableList<T>,
-                                            val onLoadNextPage: Any.() -> Unit) :
+abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
+                                             val onLoadNextPage: () -> Unit,
+                                             enablePaging: Boolean = true) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var hasNext: Boolean = true
+    /**
+     * If [hasNext] is true, it means paging is enabled.
+     * When the scroll almost reach bottom, allow adapter to perform its [onLoadNextPage]
+     */
+    private var hasNext: Boolean = true
+    /**
+     * Public getter for [hasNext], this property expose what value [hasNext] holds.
+     */
+    val isPagingEnabled get() = hasNext
+
+    /**
+     * Indicates whether there is ongoing [onLoadNextPage] process that hasn't been finished.
+     */
+    var isBusy : Boolean = false
         private set
 
+    init {
+        hasNext = enablePaging
+    }
+
+    /**
+     * Set flag that no more page will be loaded when scrolled to bottom
+     */
     fun stop() {
         hasNext = false
         notifyItemRemoved(dataset.size)
     }
 
+    /**
+     * Reenable paging, allow page to be loaded when scrolled to bottom
+     */
     fun reset() {
         hasNext = true
+        dataset.clear()
+        notifyDataSetChanged()
     }
-
-    var isBusy : Boolean = false
-        private set
-
 
     override fun getItemCount(): Int = dataset.size + (if (hasNext) 1 else 0)
 
@@ -53,7 +75,10 @@ abstract class PagingRecyclerViewAdapter<T>(val dataset: MutableList<T>,
         }
     }
 
-    fun onLoadNextPageSuccess() {
+    /**
+     * Callback function. Must be loaded on load next page success.
+     */
+    fun onNextPageLoaded() {
         isBusy = false
     }
 }

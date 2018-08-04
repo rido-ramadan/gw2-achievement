@@ -15,8 +15,8 @@ import retrofit2.http.Query
 
 interface GuildWars2API {
 
-    @GET("achievements/groups?page=0")
-    fun GET_AchievementGroups(): Observable<Response<List<AchievementGroup>>>
+    @GET("achievements/groups")
+    fun GET_AchievementGroups(@Query("page") page: Int): Observable<Response<List<AchievementGroup>>>
 
     @GET("achievements/categories")
     fun GET_AchievementCategories(@Query("ids") ids: String,

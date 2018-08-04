@@ -5,29 +5,26 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
+import com.edgardrake.gw2.achievement.widgets.recycler.PagingRecyclerViewAdapter
 import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 
-class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
-                              val onItemClicked: (Int, AchievementGroup) -> Unit):
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    var isStopLoading = false
-        private set
-
-    override fun getItemCount() = dataset.size + if (isStopLoading) 0 else 1
+class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,
+                              val onItemClicked: (Int, AchievementGroup) -> Unit,
+                              onScroll: () -> Unit,
+                              hasNext: Boolean):
+    PagingRecyclerViewAdapter<AchievementGroup>(dataset, onScroll, hasNext) {
 
     override fun getItemViewType(position: Int) =
-        if (position == dataset.size)
-            R.layout.grid_loading_view_holder
-        else
+        if (position < dataset.size)
             R.layout.grid_achievement_group
+        else
+            super.getItemViewType(position)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         if (viewType == R.layout.grid_achievement_group)
             AchievementGroupHolder(parent)
         else
-            LoadingViewHolder(parent)
+            super.onCreateViewHolder(parent, viewType)
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -37,15 +34,6 @@ class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
             holder.description = achievementGroup.description
             holder.itemView.setOnClickListener { onItemClicked(holder.adapterPosition, achievementGroup) }
         }
-    }
-
-    fun stopLoading() {
-        notifyItemRemoved(itemCount)
-        isStopLoading = true
-    }
-
-    fun resetLoading() {
-        isStopLoading = false
     }
 
     class AchievementGroupHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
