@@ -7,30 +7,27 @@ import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.utilities.GlideApp
 import com.edgardrake.multipurpose.views.recycler.LoadingViewHolder
+import com.edgardrake.multipurpose.views.recycler.PagingRecyclerViewAdapter
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
-class AchievementsAdapter(val dataset: List<Achievement>,
+class AchievementsAdapter(dataset: MutableList<Achievement>,
                           val defaultIcon: String,
-                          val onItemClicked: (Int, Achievement) -> Unit):
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    var isStopLoading = false
-        private set
-
-    override fun getItemCount() = dataset.size + if (isStopLoading) 0 else 1
+                          val onItemClicked: (Int, Achievement) -> Unit,
+                          onScroll: () -> Unit,
+                          enablePaging: Boolean):
+    PagingRecyclerViewAdapter<Achievement>(dataset, onScroll, enablePaging) {
 
     override fun getItemViewType(position: Int) =
-        if (position == dataset.size)
-            R.layout.grid_loading_view_holder
-        else
+        if (position < dataset.size)
             R.layout.grid_achievement
-
+        else
+            super.getItemViewType(position)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         if (viewType == R.layout.grid_achievement)
             AchievementsHolder(parent)
         else
-            LoadingViewHolder(parent)
+            super.onCreateViewHolder(parent, viewType)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AchievementsHolder) {
@@ -39,15 +36,6 @@ class AchievementsAdapter(val dataset: List<Achievement>,
             holder.setIcon(achievement.icon ?: defaultIcon)
             holder.itemView.setOnClickListener { onItemClicked(holder.adapterPosition, achievement) }
         }
-    }
-
-    fun stopLoading() {
-        notifyItemRemoved(itemCount)
-        isStopLoading = true
-    }
-
-    fun resetLoading() {
-        isStopLoading = false
     }
 
     class AchievementsHolder(parent: ViewGroup): RecyclerView.ViewHolder(

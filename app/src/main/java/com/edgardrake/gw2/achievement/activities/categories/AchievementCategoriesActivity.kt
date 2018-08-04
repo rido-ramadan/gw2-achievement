@@ -7,8 +7,6 @@ import com.edgardrake.gw2.achievement.R
 import com.edgardrake.multipurpose.base.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 
-private const val ACHIEVEMENT_GROUP = "data"
-
 class AchievementCategoriesActivity : BaseActivity() {
 
     private lateinit var group: AchievementGroup
@@ -25,6 +23,8 @@ class AchievementCategoriesActivity : BaseActivity() {
     }
 
     companion object {
+        private const val ACHIEVEMENT_GROUP = "data"
+
         @JvmStatic
         fun startThisActivity(context: Context, achievementGroup: AchievementGroup) {
             context.startActivity(Intent(context, AchievementCategoriesActivity::class.java)
