@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -71,6 +72,8 @@ fun Fragment.snackbar(text: String) {
         .setAction(android.R.string.ok, null)
         .show()
 }
+
+fun <T> Collection<T>.flatten() : String = TextUtils.join(",", this)
 
 inline val Int.dp : Int
     get() = Math.round(this * Resources.getSystem().getDisplayMetrics().density)

@@ -22,6 +22,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseActivity : AppCompatActivity() {
 
     protected var httpClient = HTTPRequester()

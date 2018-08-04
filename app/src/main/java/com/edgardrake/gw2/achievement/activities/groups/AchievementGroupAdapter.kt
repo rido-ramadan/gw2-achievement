@@ -1,36 +1,33 @@
 package com.edgardrake.gw2.achievement.activities.groups
 
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
+import com.edgardrake.gw2.achievement.widgets.recycler.PagingRecyclerViewAdapter
 import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 
-class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
-                              val onItemClicked: (Int, AchievementGroup) -> Unit):
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,
+                              val onItemClicked: (Int, AchievementGroup) -> Unit,
+                              onScroll: () -> Unit,
+                              enablePaging: Boolean):
+    PagingRecyclerViewAdapter<AchievementGroup>(dataset, onScroll, enablePaging) {
 
-    var isStopLoading = false
-        private set
-
-    override fun getItemCount() = dataset.size + if (isStopLoading) 0 else 1
-
-    override fun getItemViewType(position: Int) =
-        if (position == dataset.size)
-            R.layout.grid_loading_view_holder
-        else
+    override fun getItemViewType(position: Int): Int =
+        if (position < dataset.size)
             R.layout.grid_achievement_group
+        else
+            super.getItemViewType(position)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         if (viewType == R.layout.grid_achievement_group)
             AchievementGroupHolder(parent)
         else
-            LoadingViewHolder(parent)
+            super.onCreateViewHolder(parent, viewType)
 
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is AchievementGroupHolder) {
             val achievementGroup = dataset[holder.adapterPosition]
             holder.title = achievementGroup.name
@@ -39,16 +36,7 @@ class AchievementGroupAdapter(val dataset: List<AchievementGroup>,
         }
     }
 
-    fun stopLoading() {
-        notifyItemRemoved(itemCount)
-        isStopLoading = true
-    }
-
-    fun resetLoading() {
-        isStopLoading = false
-    }
-
-    class AchievementGroupHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    class AchievementGroupHolder(parent: ViewGroup) : ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.grid_achievement_group, parent, false)) {
 
         var title: String
