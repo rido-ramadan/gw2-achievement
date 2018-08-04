@@ -27,6 +27,7 @@ typealias HTTPError = (code: Int, message: String, response: ResponseBody?) -> U
  */
 typealias ExceptionError = ((exception: Throwable) -> Unit)
 
+@Suppress("ProtectedInFinal")
 /**
  * Created by Rido Ramadan (rido.ramadan@gmail.com) on 31/07/18
  */
