@@ -21,7 +21,7 @@ import okhttp3.Headers
  */
 class AchievementGroupsFragment : PagingFragment() {
 
-    private var groups = ArrayList<AchievementGroup>()
+    override val dataset = mutableListOf<AchievementGroup>()
 
     private var maxPage: Int? = null
         private set(value) { if (value != null) field = value }
@@ -37,7 +37,7 @@ class AchievementGroupsFragment : PagingFragment() {
         val onClick = {_: Int, data: AchievementGroup -> actionOpenCategory(data)}
         val onScroll = { GET_AllAchievementGroups() }
 
-        adapter = AchievementGroupAdapter(groups, onClick, onScroll, isPagingEnabled)
+        adapter = AchievementGroupAdapter(dataset, onClick, onScroll, isPagingEnabled)
             .apply { attachTo(gridDataset) }
 
         refreshContainer.setOnRefreshListener {
@@ -59,10 +59,9 @@ class AchievementGroupsFragment : PagingFragment() {
         httpClient.call(GuildWars2API.getService().GET_AchievementGroups(currentPage), onSuccess)
     }
 
-    private fun setAchievementGroup(dataset: List<AchievementGroup>) {
+    private fun setAchievementGroup(source: List<AchievementGroup>) {
         refreshContainer.isRefreshing = false
-
-        groups.addAll(dataset)
+        dataset.addAll(source)
 
         adapter.run {
             onNextPageLoaded()

@@ -18,11 +18,6 @@ import okhttp3.Headers
 
 class AchievementGroupsActivity : BaseActivity() {
 
-    private var groups = ArrayList<AchievementGroup>()
-    private var isCalling = false
-    var maxPage: Int? = null
-        private set(value) { if (value != null) field = value }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_achievement_group)

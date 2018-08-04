@@ -24,7 +24,7 @@ import okhttp3.Headers
 class AchievementCategoriesFragment : PagingFragment() {
 
     private lateinit var group: AchievementGroup
-    private var categories = ArrayList<AchievementCategory>()
+    override val dataset = mutableListOf<AchievementCategory>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +47,9 @@ class AchievementCategoriesFragment : PagingFragment() {
 
         // Set up RecyclerView
         gridDataset.setHasFixedSize(true)
-
         val onItemClick = { _: Int, data: AchievementCategory -> actionOpenCategory(data) }
         val onScroll = { GET_AchievementCategories() }
-        adapter = AchievementCategoriesAdapter(categories, onItemClick, onScroll, isPagingEnabled)
+        adapter = AchievementCategoriesAdapter(dataset, onItemClick, onScroll, isPagingEnabled)
             .apply { attachTo(gridDataset) }
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
@@ -71,20 +70,25 @@ class AchievementCategoriesFragment : PagingFragment() {
     }
 
     private fun GET_AchievementCategories() {
-        val callback = { result: List<AchievementCategory>, _: Headers ->
-            setAchievementCategories(result)
-        }
+        val callback: (List<AchievementCategory>, Headers) -> Unit =
+            { result: List<AchievementCategory>, _: Headers ->
+                setAchievementCategories(result)
+
+                currentPage++
+                if (currentPage >= 1) {
+                    adapterStop()
+                }
+            }
         httpClient.call(GuildWars2API.getService()
-            .GET_AchievementCategories(group.categories.flatten(), 0), callback)
+            .GET_AchievementCategories(group.categories.flatten(), currentPage), callback)
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {
-        val insertionPoint = categories.size
-        categories.addAll(source)
+        val insertionPoint = dataset.size
+        dataset.addAll(source)
 
         adapter.run {
             onNextPageLoaded()
-            adapterStop()
             notifyDataSetChanged()
             // notifyItemRangeInserted(insertionPoint, source.size)
         }
