@@ -1,7 +1,7 @@
 package com.edgardrake.gw2.achievement.library
 
 import android.support.v4.app.Fragment
-import com.edgardrake.gw2.achievement.https.HTTPRequester
+import com.edgardrake.multipurpose.https.HTTPRequester
 
 abstract class BaseFragment : Fragment() {
 

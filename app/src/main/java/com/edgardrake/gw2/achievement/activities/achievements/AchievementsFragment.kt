@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.detail.AchievementDetailActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
-import com.edgardrake.gw2.achievement.https.HTTPError
+import com.edgardrake.multipurpose.https.HTTPError
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory

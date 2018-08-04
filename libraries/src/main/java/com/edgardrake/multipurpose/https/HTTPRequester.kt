@@ -1,4 +1,4 @@
-package com.edgardrake.gw2.achievement.https
+package com.edgardrake.multipurpose.https
 
 import android.util.Log
 import io.reactivex.Observable

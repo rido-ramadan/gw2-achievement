@@ -3,23 +3,10 @@ package com.edgardrake.gw2.achievement.library
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
-import android.text.TextUtils
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import butterknife.ButterKnife
-import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.https.HTTPRequester
-import com.edgardrake.gw2.achievement.https.HTTPResponse
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import okhttp3.Headers
-import okhttp3.ResponseBody
-import retrofit2.HttpException
-import retrofit2.Response
+import com.edgardrake.multipurpose.https.HTTPRequester
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -44,10 +31,10 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun initializeView() {
-        ButterKnife.bind(this)
-        findViewById<Toolbar>(R.id.toolbar)?.let {
-            setSupportActionBar(it)
-        }
+//        ButterKnife.bind(this)
+//        findViewById<Toolbar>(R.id.toolbar)?.let {
+//            setSupportActionBar(it)
+//        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
