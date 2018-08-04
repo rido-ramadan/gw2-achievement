@@ -1,4 +1,4 @@
-package com.edgardrake.gw2.achievement.utilities
+package com.edgardrake.multipurpose.utilities
 
 import android.content.Context
 import android.content.DialogInterface
@@ -6,7 +6,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.edgardrake.gw2.achievement.R
+import com.edgardrake.multipurpose.R
 import kotlinx.android.synthetic.main.logger_dialog.view.*
 import kotlinx.android.synthetic.main.logger_entry.view.*
 
