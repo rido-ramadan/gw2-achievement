@@ -2,33 +2,29 @@ package com.edgardrake.gw2.achievement.activities.categories
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
-import com.edgardrake.gw2.achievement.library.BaseFragment
+import com.edgardrake.gw2.achievement.library.PagingFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import com.edgardrake.gw2.achievement.utilities.flatten
 import com.edgardrake.gw2.achievement.utilities.getInt
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
+import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
-
-private const val ACHIEVEMENT_GROUP = "data"
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class AchievementCategoriesFragment : BaseFragment() {
+class AchievementCategoriesFragment : PagingFragment() {
 
     private lateinit var group: AchievementGroup
     private var categories = ArrayList<AchievementCategory>()
-    private var isCalling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,49 +46,34 @@ class AchievementCategoriesFragment : BaseFragment() {
         achievementTitle.text = group.name
 
         // Set up RecyclerView
-        val onItemClick: (Int, AchievementCategory) -> Unit = { _: Int, data: AchievementCategory ->
-            if (hostActivity.findViewById<ViewGroup>(R.id.achievementCategoryDetail) != null) {
-                hostActivity.setFragment(AchievementsFragment.newInstance(data), "",
-                    R.id.achievementCategoryDetail, false)
-            } else {
-                hostActivity.setFragment(AchievementsFragment.newInstance(data), data.name,
-                    R.id.fragmentContainer, true)
-            }
-        }
         gridDataset.setHasFixedSize(true)
-        gridDataset.adapter = AchievementCategoriesAdapter(categories, onItemClick).apply {
-            if (!categories.isEmpty()) stopLoading()
-        }
+
+        val onItemClick = { _: Int, data: AchievementCategory -> actionOpenCategory(data) }
+        val onScroll = { GET_AchievementCategories() }
+        adapter = AchievementCategoriesAdapter(categories, onItemClick, onScroll, isPagingEnabled)
+            .apply { attachTo(gridDataset) }
         gridDataset.layoutManager?.let {
             if (it is GridLayoutManager) {
                 it.setLookupSize { position ->
-                    when (gridDataset.adapter?.getItemViewType(position)) {
-                        R.layout.grid_loading_view_holder -> R.integer.grid_column.getInt()
+                    when (adapter.getItemViewType(position)) {
+                        LoadingViewHolder.LAYOUT_ID -> R.integer.grid_column.getInt()
                         else -> 1
                     }
                 }
             }
         }
-        gridDataset.addOnScrollListener(onScrollListener)
 
         // Set up SwipeRefreshLayout
         refreshContainer.setOnRefreshListener {
             refreshContainer.isRefreshing = false
-            categories.clear()
-            gridDataset.adapter?.let {
-                it as AchievementCategoriesAdapter
-                it.resetLoading()
-                it.notifyDataSetChanged()
-            }
+            adapterReset()
         }
     }
 
     private fun GET_AchievementCategories() {
         val callback = { result: List<AchievementCategory>, _: Headers ->
             setAchievementCategories(result)
-            isCalling = false
         }
-        isCalling = true
         httpClient.call(GuildWars2API.getService()
             .GET_AchievementCategories(group.categories.flatten(), 0), callback)
     }
@@ -100,33 +81,28 @@ class AchievementCategoriesFragment : BaseFragment() {
     private fun setAchievementCategories(source: List<AchievementCategory>) {
         val insertionPoint = categories.size
         categories.addAll(source)
-        gridDataset.adapter?.let {
-            if (it is AchievementCategoriesAdapter) {
-                // it.notifyItemRangeInserted(insertionPoint, source.size)
-                it.notifyDataSetChanged()
-                it.stopLoading()
-            }
+
+        adapter.run {
+            onNextPageLoaded()
+            adapterStop()
+            notifyDataSetChanged()
+            // notifyItemRangeInserted(insertionPoint, source.size)
         }
-        gridDataset.addOnScrollListener(onScrollListener)
     }
 
-    private val onScrollListener = object: RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            recyclerView.adapter?.let { adapter ->
-                adapter as AchievementCategoriesAdapter
-                recyclerView.layoutManager?.let { manager ->
-                    manager as LinearLayoutManager
-                    if (!adapter.isStopLoading && !isCalling &&
-                        manager.itemCount <= manager.findFirstVisibleItemPosition() + manager.childCount) {
-                        recyclerView.removeOnScrollListener(this)
-                        GET_AchievementCategories()
-                    }
-                }
-            }
+    private fun actionOpenCategory(category: AchievementCategory) {
+        if (hostActivity.findViewById<ViewGroup>(R.id.achievementCategoryDetail) != null) {
+            hostActivity.setFragment(AchievementsFragment.newInstance(category), "",
+                R.id.achievementCategoryDetail, false)
+        } else {
+            hostActivity.setFragment(AchievementsFragment.newInstance(category), category.name,
+                R.id.fragmentContainer, true)
         }
     }
 
     companion object {
+        const val ACHIEVEMENT_GROUP = "data"
+
         @JvmStatic
         fun newInstance(group: AchievementGroup): AchievementCategoriesFragment =
             AchievementCategoriesFragment().apply {

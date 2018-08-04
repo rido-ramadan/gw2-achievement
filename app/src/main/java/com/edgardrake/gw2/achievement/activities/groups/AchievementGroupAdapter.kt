@@ -1,6 +1,6 @@
 package com.edgardrake.gw2.achievement.activities.groups
 
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
@@ -14,20 +14,20 @@ class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,
                               enablePaging: Boolean):
     PagingRecyclerViewAdapter<AchievementGroup>(dataset, onScroll, enablePaging) {
 
-    override fun getItemViewType(position: Int) =
+    override fun getItemViewType(position: Int): Int =
         if (position < dataset.size)
             R.layout.grid_achievement_group
         else
             super.getItemViewType(position)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         if (viewType == R.layout.grid_achievement_group)
             AchievementGroupHolder(parent)
         else
             super.onCreateViewHolder(parent, viewType)
 
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is AchievementGroupHolder) {
             val achievementGroup = dataset[holder.adapterPosition]
             holder.title = achievementGroup.name
@@ -36,7 +36,7 @@ class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,
         }
     }
 
-    class AchievementGroupHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    class AchievementGroupHolder(parent: ViewGroup) : ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.grid_achievement_group, parent, false)) {
 
         var title: String

@@ -3,12 +3,13 @@ package com.edgardrake.gw2.achievement.widgets.recycler
 import android.support.annotation.CallSuper
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.*
 import android.view.ViewGroup
+import com.edgardrake.gw2.achievement.library.PagingFragment
 
 abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
                                              val onLoadNextPage: () -> Unit,
-                                             enablePaging: Boolean = true) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                             enablePaging: Boolean = true) : Adapter<ViewHolder>() {
 
     /**
      * If [hasNext] is true, it means paging is enabled.
@@ -49,20 +50,56 @@ abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
 
     override fun getItemCount(): Int = dataset.size + (if (hasNext) 1 else 0)
 
+    /**
+     * Usage:
+     * ```
+     *      override fun getItemViewType(position: Int) =
+     *          when (position) {
+     *              // Choose between
+     *              LoadingViewHolder.LAYOUT_ID -> super.getItemViewType(position)
+     *              // Or
+     *              default -> super.getItemViewType(position)
+     *          }
+     * ```
+     * Or using if-else equivalent
+     */
     @CallSuper
     override fun getItemViewType(position: Int): Int = LoadingViewHolder.LAYOUT_ID
 
+    /**
+     * Usage:
+     * ```
+     *      override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+     *          when (viewType) {
+     *              // Choose between
+     *              LoadingViewHolder.LAYOUT_ID -> super.onCreateViewHolder(parent, viewType)
+     *              // Or
+     *              default -> super.onCreateViewHolder(parent, viewType)
+     *          }
+     * ```
+     * Or using if-else equivalent
+     */
     @CallSuper
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         LoadingViewHolder(parent)
 
+    /**
+     * Calling can be from constructor, directly attach to [host]:
+     * ```
+     *      Adapter(args).attachTo(recyclerView)
+     * ```
+     * or if usage is isolated in [PagingFragment], like this:
+     * ```
+     *      adapter = Adapter(args).apply { attachTo(recyclerView) }
+     * ```
+     */
     fun attachTo(host: RecyclerView) {
         host.adapter = this
         host.clearOnScrollListeners()
         host.addOnScrollListener(onScrollListener)
     }
 
-    private val onScrollListener = object : RecyclerView.OnScrollListener() {
+    private val onScrollListener = object : OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             recyclerView.layoutManager?.let { manager ->
                 manager as LinearLayoutManager
@@ -80,5 +117,9 @@ abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
      */
     fun onNextPageLoaded() {
         isBusy = false
+    }
+
+    interface OnPaging {
+        fun onLoadNext()
     }
 }
