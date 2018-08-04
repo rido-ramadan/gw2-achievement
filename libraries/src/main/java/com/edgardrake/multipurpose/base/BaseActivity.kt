@@ -1,12 +1,12 @@
-package com.edgardrake.gw2.achievement.library
+package com.edgardrake.multipurpose.base
 
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.edgardrake.multipurpose.base.BaseApplication
 import com.edgardrake.multipurpose.https.HTTPRequester
 import java.util.*
 
@@ -32,10 +32,10 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun initializeView() {
-//        ButterKnife.bind(this)
-//        findViewById<Toolbar>(R.id.toolbar)?.let {
-//            setSupportActionBar(it)
-//        }
+        val id = resources.getIdentifier("toolbar", "id", packageName)
+        findViewById<Toolbar>(id)?.let {
+            setSupportActionBar(it)
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 

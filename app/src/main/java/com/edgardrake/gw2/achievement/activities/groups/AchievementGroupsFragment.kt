@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.categories.AchievementCategoriesFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
-import com.edgardrake.gw2.achievement.library.PagingFragment
+import com.edgardrake.multipurpose.base.PagingFragment
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import kotlinx.android.synthetic.main.fragment_achievement_group.*
 import okhttp3.Headers

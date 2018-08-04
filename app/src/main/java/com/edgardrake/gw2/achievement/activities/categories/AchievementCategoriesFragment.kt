@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.achievements.AchievementsFragment
 import com.edgardrake.gw2.achievement.https.GuildWars2API
-import com.edgardrake.gw2.achievement.library.PagingFragment
+import com.edgardrake.multipurpose.base.PagingFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 import com.edgardrake.multipurpose.utilities.flatten
 import com.edgardrake.multipurpose.utilities.getInt
 import com.edgardrake.multipurpose.utilities.setLookupSize
-import com.edgardrake.gw2.achievement.widgets.recycler.LoadingViewHolder
+import com.edgardrake.multipurpose.views.recycler.LoadingViewHolder
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
 import okhttp3.Headers
 

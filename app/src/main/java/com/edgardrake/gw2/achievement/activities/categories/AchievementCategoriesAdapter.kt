@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.utilities.GlideApp
-import com.edgardrake.gw2.achievement.widgets.recycler.PagingRecyclerViewAdapter
+import com.edgardrake.multipurpose.views.recycler.PagingRecyclerViewAdapter
 import kotlinx.android.synthetic.main.grid_achievement.view.*
 
 class AchievementCategoriesAdapter(dataset: MutableList<AchievementCategory>,

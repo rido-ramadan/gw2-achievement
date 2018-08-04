@@ -1,11 +1,10 @@
-package com.edgardrake.gw2.achievement.widgets.recycler
+package com.edgardrake.multipurpose.views.recycler
 
 import android.support.annotation.CallSuper
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.*
 import android.view.ViewGroup
-import com.edgardrake.gw2.achievement.library.PagingFragment
 
 abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
                                              val onLoadNextPage: () -> Unit,
@@ -88,7 +87,7 @@ abstract class PagingRecyclerViewAdapter<T> (val dataset: MutableList<T>,
      * ```
      *      Adapter(args).attachTo(recyclerView)
      * ```
-     * or if usage is isolated in [PagingFragment], like this:
+     * or if usage is isolated in PagingFragment, like this:
      * ```
      *      adapter = Adapter(args).apply { attachTo(recyclerView) }
      * ```

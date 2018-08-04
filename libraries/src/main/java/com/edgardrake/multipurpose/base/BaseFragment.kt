@@ -1,4 +1,4 @@
-package com.edgardrake.gw2.achievement.library
+package com.edgardrake.multipurpose.base
 
 import android.support.v4.app.Fragment
 import com.edgardrake.multipurpose.https.HTTPRequester

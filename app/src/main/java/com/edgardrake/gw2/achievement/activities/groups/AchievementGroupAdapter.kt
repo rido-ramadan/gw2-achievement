@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.models.AchievementGroup
-import com.edgardrake.gw2.achievement.widgets.recycler.PagingRecyclerViewAdapter
+import com.edgardrake.multipurpose.views.recycler.PagingRecyclerViewAdapter
 import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 
 class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,

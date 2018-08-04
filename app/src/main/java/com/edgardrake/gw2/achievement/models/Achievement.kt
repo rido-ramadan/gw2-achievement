@@ -47,6 +47,7 @@ data class Achievement(
         @SerializedName("Repeatable") REPEATABLE,
         @SerializedName("Hidden") HIDDEN,
         @SerializedName("RequiresUnlock") REQUIRE_UNLOCK,
+        @SerializedName("RepairOnLogin") REPAIR_ON_LOGIN,
         @SerializedName("Daily") DAILY,
         @SerializedName("Weekly") WEEKLY,
         @SerializedName("Monthly") MONTHLY,

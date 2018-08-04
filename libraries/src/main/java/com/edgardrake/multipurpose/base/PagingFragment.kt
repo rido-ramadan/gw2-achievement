@@ -1,7 +1,7 @@
-package com.edgardrake.gw2.achievement.library
+package com.edgardrake.multipurpose.base
 
 import android.support.v7.widget.RecyclerView.Adapter
-import com.edgardrake.gw2.achievement.widgets.recycler.PagingRecyclerViewAdapter
+import com.edgardrake.multipurpose.views.recycler.PagingRecyclerViewAdapter
 
 /**
  * Created by Rido Ramadan (rido.ramadan@gmail.com) on 04/08/18

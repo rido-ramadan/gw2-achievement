@@ -8,7 +8,7 @@ import android.support.design.widget.Snackbar
 import android.text.TextUtils
 import android.view.View
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.library.BaseActivity
+import com.edgardrake.multipurpose.base.BaseActivity
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.utilities.GlideApp
 import kotlinx.android.synthetic.main.activity_achievement_detail.*

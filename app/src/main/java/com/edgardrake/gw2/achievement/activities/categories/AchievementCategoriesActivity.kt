@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.edgardrake.gw2.achievement.R
-import com.edgardrake.gw2.achievement.library.BaseActivity
+import com.edgardrake.multipurpose.base.BaseActivity
 import com.edgardrake.gw2.achievement.models.AchievementGroup
 
 private const val ACHIEVEMENT_GROUP = "data"
