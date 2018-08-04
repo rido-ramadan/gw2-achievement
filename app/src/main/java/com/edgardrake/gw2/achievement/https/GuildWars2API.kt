@@ -16,13 +16,13 @@ import retrofit2.http.Query
 interface GuildWars2API {
 
     @GET("achievements/groups")
-    fun GET_AchievementGroups(@Query("page") page: Int): Observable<Response<List<AchievementGroup>>>
+    fun GET_AchievementGroups(@Query("page") page: Int): HTTPResponse<List<AchievementGroup>>
 
     @GET("achievements/categories")
     fun GET_AchievementCategories(@Query("ids") ids: String,
-                                  @Query("page") page: Int): Observable<Response<List<AchievementCategory>>>
+                                  @Query("page") page: Int): HTTPResponse<List<AchievementCategory>>
     @GET("achievements")
-    fun GET_Achievements(@Query("ids") ids: String): Observable<Response<List<Achievement>>>
+    fun GET_Achievements(@Query("ids") ids: String): HTTPResponse<List<Achievement>>
 
     companion object {
         private val GuildWars2Service by lazy {
