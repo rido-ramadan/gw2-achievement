@@ -13,10 +13,12 @@ import android.view.ViewGroup
 import com.edgardrake.gw2.achievement.R
 import com.edgardrake.gw2.achievement.activities.detail.AchievementDetailActivity
 import com.edgardrake.gw2.achievement.https.GuildWars2API
+import com.edgardrake.gw2.achievement.https.HTTPError
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.Achievement
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.utilities.GlideApp
+import com.edgardrake.gw2.achievement.utilities.flatten
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
 import com.edgardrake.gw2.achievement.utilities.toast
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
@@ -103,7 +105,7 @@ class AchievementsFragment : BaseFragment() {
                 setAchievements(result)
                 isCalling = false
             }
-        val onHTTPError: ((Int, String, ResponseBody?) -> Unit)? = { code: Int, message: String, _: ResponseBody? ->
+        val onHTTPError: HTTPError? = { code: Int, message: String, _: ResponseBody? ->
             toast(String.format("%d: %s", code, message))
             gridDataset.adapter?.let {
                 it as AchievementsAdapter
@@ -112,7 +114,7 @@ class AchievementsFragment : BaseFragment() {
         }
         isCalling = true
         httpClient.call(GuildWars2API.getService()
-            .GET_Achievements(category.flattenAchievements()), callback, onHTTPError)
+            .GET_Achievements(category.achievements.flatten()), callback, onHTTPError)
     }
 
     private fun setAchievements(source: List<Achievement>) {

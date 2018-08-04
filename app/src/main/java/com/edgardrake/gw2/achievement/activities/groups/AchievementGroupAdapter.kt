@@ -11,8 +11,8 @@ import kotlinx.android.synthetic.main.grid_achievement_group.view.*
 class AchievementGroupAdapter(dataset: MutableList<AchievementGroup>,
                               val onItemClicked: (Int, AchievementGroup) -> Unit,
                               onScroll: () -> Unit,
-                              hasNext: Boolean):
-    PagingRecyclerViewAdapter<AchievementGroup>(dataset, onScroll, hasNext) {
+                              enablePaging: Boolean):
+    PagingRecyclerViewAdapter<AchievementGroup>(dataset, onScroll, enablePaging) {
 
     override fun getItemViewType(position: Int) =
         if (position < dataset.size)

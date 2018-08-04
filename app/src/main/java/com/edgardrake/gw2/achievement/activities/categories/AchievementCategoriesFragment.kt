@@ -13,6 +13,7 @@ import com.edgardrake.gw2.achievement.https.GuildWars2API
 import com.edgardrake.gw2.achievement.library.BaseFragment
 import com.edgardrake.gw2.achievement.models.AchievementCategory
 import com.edgardrake.gw2.achievement.models.AchievementGroup
+import com.edgardrake.gw2.achievement.utilities.flatten
 import com.edgardrake.gw2.achievement.utilities.getInt
 import com.edgardrake.gw2.achievement.utilities.setLookupSize
 import kotlinx.android.synthetic.main.fragment_achievement_categories.*
@@ -93,7 +94,7 @@ class AchievementCategoriesFragment : BaseFragment() {
         }
         isCalling = true
         httpClient.call(GuildWars2API.getService()
-            .GET_AchievementCategories(group.flattenCategories(), 0), callback)
+            .GET_AchievementCategories(group.categories.flatten(), 0), callback)
     }
 
     private fun setAchievementCategories(source: List<AchievementCategory>) {
